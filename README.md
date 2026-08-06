@@ -6,6 +6,9 @@ suggests changes, tracks fees/tax/profit, and manages workspaces with full data 
 
 **100% open source, zero-cost stack — no paid APIs, no paid hosting, no domains required.**
 
+> 🌐 **Live demo site:** https://lucasmaxxinfo-sketch.github.io/Listrix-OpenSource/
+> (the demo shell loads; the backend + AI run on your own computer via `docker compose up`).
+
 | Layer     | Technology                                        | License |
 |-----------|---------------------------------------------------|---------|
 | Frontend  | React 19 (CRACO) · Tailwind · dark-industrial UI   | MIT     |
