@@ -1,0 +1,43 @@
+{
+  "summary": "Phases 16-21 (Month 4-6 sweep): (16) Object storage - image_blobs collection, POST /api/items/{id}/image, GET /api/images/{id}?thumb=1 with Pillow thumbnails, items keep only image_id; (17) Background jobs - analyze-all enqueues a persisted job (GET /api/jobs/{id}, concurrency 3), in-app notifications + mark-read endpoints, opt-in scheduler (SCHEDULER_ENABLED); (18) Real Facebook (Graph API page token) + Gmail (API token) adapters staged behind env vars - Facebook sync queues approval-gated reduce_price suggestions from Marketplace anchors, Gmail imports buyer messages into the inbox, replies are drafts only; (19) Workflow engine - item stage lifecycle (inventory|listed|sold|archived) with validated transitions + Kanban/Timeline UI; (20) Global search GET /api/search, CSV workspace import POST /api/workspaces/import, event analytics GET /api/analytics; (21) Multi-user roles - workspace_members collection, owner-gated invite/remove/list, member 403s on workspace mutation. Frontend wired end-to-end (header search, notifications bell, Kanban/Timeline tabs, Inbox reply drafts, Settings team + CSV import, Dashboard analytics panel, imageSrc thumbnails). Verified with 17 new backend tests (11 platform + 6 connector/roles) - full local suite 83 passed, 2 skipped - plus esbuild syntax checks on every touched frontend file.",
+  "backend_issues": {
+    "critical_bugs": [],
+    "minor_bugs": [
+      "TestClient background jobs only progress while requests are in flight; production uses the real event loop so this is a test artifact only"
+    ],
+    "flaky_endpoints": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "passed_tests": [
+    "STORAGE: image upload sets image_id; GET /images/{id} returns JPEG bytes; ?thumb=1 smaller than original; foreign workspace 404; invalid base64 400",
+    "STORAGE: item documents contain no inline base64; blob lives in image_blobs with thumbnail",
+    "JOBS: analyze-all returns job_id queued; job completes with results=2; foreign workspace job access 404",
+    "JOBS: empty workspace analyze-all returns done without a job",
+    "SCHEDULER: run_scheduled_tick enqueues a scheduled-analyze job that completes",
+    "NOTIFICATIONS: sale + stage notifications created; mark-all-read clears unread",
+    "STAGES: inventory->listed->sold->archived->listed->inventory valid; sold->listed and bogus stage 400; foreign workspace 404; mark-sold/unsold keep stage consistent",
+    "SEARCH: item match scoped per workspace; min 2 chars",
+    "IMPORT: CSV 2 imported / 2 skipped with per-row errors; ITEMS_IMPORTED event; other workspace untouched",
+    "ANALYTICS: totals/items/sold + top event types + per-day series",
+    "INBOX: reply draft stored + read toggle; empty text 400; foreign workspace 404",
+    "FACEBOOK: connect stores encrypted token; sync queues 1 pending reduce_price suggestion (new_price 149) without mutating the listing; tokens never exposed",
+    "FACEBOOK: anchor >= 95% of current price -> 0 suggestions; unconfigured keeps legacy simulated toggle",
+    "GMAIL: connect + sync imports 1 real BUYER_MESSAGE linked to item; reply becomes a draft",
+    "GMAIL: inbox refresh merges real messages when connected (gmail_imported=1)",
+    "MEMBERS: owner invites member (active); member lists but cannot update workspace (403); non-member 403; owner removes member",
+    "REGRESSION: full local suite 83 passed / 2 skipped (50.7s, xdist loadscope)"
+  ],
+  "skipped_tests": [
+    "test_core.py / test_core2.py POC tests skipped without a real EMERGENT_LLM_KEY"
+  ],
+  "known_remaining": [
+    "Live end-to-end validation of TradeMe/Facebook/Gmail with real credentials + registered callbacks",
+    "Sales P&L refinements: per-sale cost-of-goods, marketplace payout reconciliation",
+    "Push/email notification channels; swap image_blobs to S3; shared rate-limit store for multi-worker",
+    "Communications hub outbound sending (deliberately manual drafts today)"
+  ]
+}

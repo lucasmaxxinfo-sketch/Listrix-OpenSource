@@ -1,0 +1,50 @@
+{
+  "summary": "Phase 12 (P1): backend modularization, DB indexes, and LLM resilience. Refactored the monolithic backend/server.py (~1000 lines) into config/deps/utils + db/ (migrations, indexes) + models/ + services/ (llm, events, memory, listing, vision, marketing_agent, integrations) + routes/ (one module per domain) with ZERO behavior change. Route parity verified: 33/33 identical paths and methods. Fixed the WORKSPACE_CREATED event bug (create_workspace previously logged ITEM_CREATED). Added the recommended MongoDB index set applied on startup. Added LLM retry with exponential backoff and response caching (vision never cached). Legacy test scripts relocated to backend/tests/ with skip guards; new fully-local test suites run against an in-memory Mongo (mongomock) with a mocked LLM. Full local suite: 40 passed, 2 skipped (LLM POCs that require a real key). Uvicorn HTTP smoke test passed (workspace creation, item CRUD scoping, integrations seeding, inbox refresh, export, event stream).",
+  "backend_issues": {
+    "critical_bugs": [],
+    "minor_bugs": [],
+    "flaky_endpoints": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "passed_tests": [
+    "ROUTE PARITY: all 33 api routes (paths+methods) identical before/after refactor",
+    "LOCAL: test_api_root - GET /api/ returns Listrix API is running",
+    "LOCAL: test_default_workspace_bootstrapped - startup creates the default workspace",
+    "LOCAL: test_workspace_create_logs_workspace_created_event - WORKSPACE_CREATED logged, ITEM_CREATED not (bug fix)",
+    "LOCAL: test_workspace_update_and_export - PUT + export scoped to the workspace",
+    "LOCAL: test_item_isolation_between_workspaces - no cross-workspace item reads",
+    "LOCAL: test_missing_and_invalid_header_fallback_to_default - missing/invalid header falls back to default workspace",
+    "LOCAL: test_item_detail_cross_workspace_404 - item detail protected across workspaces",
+    "LOCAL: test_listing_generation_is_scoped - AI listing stored under the caller workspace only",
+    "LOCAL: test_analyze_agent_and_control_layer - analyze + add_keywords apply + reduce_price apply + price history",
+    "LOCAL: test_suggestion_edit_and_dismiss - edit preserves pending; dismiss leaves queue",
+    "LOCAL: test_suggestion_cross_workspace_protection - apply/dismiss/edit return 404 cross-workspace",
+    "LOCAL: test_analyze_all_and_performance_intelligence - batch analysis + intelligence aggregates",
+    "LOCAL: test_client_events_whitelist - allowed types pass; unknown types 400",
+    "LOCAL: test_inbox_refresh_and_isolation - inbox scoped per workspace",
+    "LOCAL: test_integrations_connect_sync_and_isolation - 5 seeded connectors; sync gated on connect; isolated state",
+    "LOCAL: test_brief_generate_and_latest - brief persisted + latest scoped",
+    "LOCAL: test_assistant_with_and_without_item - assistant answer + voice events logged",
+    "LOCAL: test_vision_analysis_persists_to_item - vision/value estimate persisted + events",
+    "LOCAL: test_competitors_endpoint - competitor structure endpoint works",
+    "LOCAL: test_startup_creates_indexes - ensure_indexes applied on startup",
+    "LOCAL: test_no_mongo_ids_leak - no _id in any list endpoint payload",
+    "LOCAL: test_helpers - parse_iso/to_dt/hours_since/_seed",
+    "LOCAL: test_llm - extract_json variants, retry-then-succeed, max-retries give-up, no-retry on JSONDecodeError, cache hit, cache keyed by system+prompt, vision never cached",
+    "HTTP SMOKE: uvicorn boot + /api/ + workspace create + item CRUD + integrations + inbox + export + WORKSPACE_CREATED event"
+  ],
+  "skipped_tests": [
+    "test_core.py / test_core2.py POC tests skipped without a real EMERGENT_LLM_KEY (real LLM calls)"
+  ],
+  "known_remaining": [
+    "Purge preview test data (requires preview DB access)",
+    "Authentication (HANDOVER §25) remains the top production priority",
+    "Real TradeMe connector behind services/integrations/base.py",
+    "Object storage for base64 images; background queue for analyze-all",
+    "Shared scoped_query helper deferred (scoping centralized via get_wid + route conventions)"
+  ]
+}

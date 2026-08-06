@@ -1,0 +1,40 @@
+{
+  "summary": "Phase 13 (P0): Authentication & Authorization. Added email/password + JWT auth (bcrypt hashing, HS256 tokens): POST /api/auth/register, POST /api/auth/login, GET /api/auth/me. Workspaces now carry owner_id; registration creates an owned default workspace with seeded connectors. Workspace routes are ownership-guarded (GET/PUT/export -> 403 for other users). get_wid is auth-aware: foreign X-Workspace-Id headers are rejected with 403 for authenticated users, and missing headers fall back to the user's own default workspace. LLM endpoints are rate-limited per workspace (in-process sliding window, default 30/min -> 429). Staged enforcement via AUTH_REQUIRED (default false = legacy no-auth behavior; true = 401 on every /api route without a valid token). Frontend: Bearer-token interceptor, AuthContext, /login page, header sign in/out. Verified with 12 new local tests (full suite 52 passed, 2 skipped) plus live uvicorn smoke tests in grace and strict modes.",
+  "backend_issues": {
+    "critical_bugs": [],
+    "minor_bugs": [],
+    "flaky_endpoints": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "passed_tests": [
+    "AUTH: register returns bearer token + clean user (no password_hash)",
+    "AUTH: register creates owned default workspace with 5 seeded connectors",
+    "AUTH: duplicate email -> 400; short password -> 422",
+    "AUTH: login success + wrong password -> 401",
+    "AUTH: /auth/me requires valid token (none/bogus/Basic -> 401)",
+    "OWNERSHIP: other user cannot GET/PUT/export a workspace (403); owner can",
+    "OWNERSHIP: workspace lists exclude other users' owned workspaces",
+    "LEGACY: ownerless workspace open without auth (grace mode)",
+    "TENANCY: authenticated user with foreign X-Workspace-Id -> 403",
+    "TENANCY: no header -> falls back to the user's own default workspace (no leak)",
+    "STRICT: AUTH_REQUIRED=true -> 401 on items/workspaces/me without token; auth + workspace routes work with token; register/login stay public; ownerless workspace blocked for users",
+    "RATE LIMIT: LLM endpoint 429 after per-workspace limit (2 max in test)",
+    "CORS: preflight returns allow-origin",
+    "HTTP SMOKE (grace): register -> me -> owned workspaces -> no-token items 200 -> bad token 401",
+    "HTTP SMOKE (strict): no-token items/workspaces/events 401; token restores 200"
+  ],
+  "skipped_tests": [
+    "test_core.py / test_core2.py POC tests skipped without a real EMERGENT_LLM_KEY"
+  ],
+  "known_remaining": [
+    "Frontend login-flow polish + app gating when AUTH_REQUIRED=true is deployed",
+    "Per-workspace usage quotas/budgets; CORS lockdown for multi-origin; token refresh",
+    "Real TradeMe connector behind services/integrations/base.py",
+    "Object storage for base64 images; background queue for analyze-all",
+    "Rate limiter is in-process only; shared store (Redis) needed for multi-worker"
+  ]
+}

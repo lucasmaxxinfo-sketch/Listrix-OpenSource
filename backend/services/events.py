@@ -1,0 +1,62 @@
+"""Audit logging for the event stream, with a typed EventType enum."""
+import logging
+from enum import Enum
+from typing import Any, Optional, Union
+
+from deps import db
+from models import Event
+
+logger = logging.getLogger(__name__)
+
+
+class EventType(str, Enum):
+    WORKSPACE_CREATED = "WORKSPACE_CREATED"
+    AUTH_USER_REGISTERED = "AUTH_USER_REGISTERED"
+    AUTH_LOGIN = "AUTH_LOGIN"
+    ITEM_CREATED = "ITEM_CREATED"
+    ITEM_SOLD = "ITEM_SOLD"
+    ITEM_UNSOLD = "ITEM_UNSOLD"
+    LISTING_GENERATED = "LISTING_GENERATED"
+    AI_ERROR = "AI_ERROR"
+    IMAGE_ANALYSED = "IMAGE_ANALYSED"
+    IMAGE_UPLOADED = "IMAGE_UPLOADED"
+    ITEM_STAGE_CHANGED = "ITEM_STAGE_CHANGED"
+    ITEMS_IMPORTED = "ITEMS_IMPORTED"
+    VALUE_ESTIMATED = "VALUE_ESTIMATED"
+    MARKET_SIGNAL_UPDATED = "MARKET_SIGNAL_UPDATED"
+    LISTING_VIEW_ESTIMATED = "LISTING_VIEW_ESTIMATED"
+    LISTING_PERFORMANCE_UPDATED = "LISTING_PERFORMANCE_UPDATED"
+    ACTION_QUEUED = "ACTION_QUEUED"
+    AI_SUGGESTION_CREATED = "AI_SUGGESTION_CREATED"
+    USER_APPROVED_ACTION = "USER_APPROVED_ACTION"
+    PRICE_UPDATED = "PRICE_UPDATED"
+    ACTION_APPROVED = "ACTION_APPROVED"
+    AI_SUGGESTION_APPLIED = "AI_SUGGESTION_APPLIED"
+    ACTION_REJECTED = "ACTION_REJECTED"
+    VOICE_QUERY_RECEIVED = "VOICE_QUERY_RECEIVED"
+    VOICE_QUERY_PROCESSED = "VOICE_QUERY_PROCESSED"
+    INBOX_MESSAGE_RECEIVED = "INBOX_MESSAGE_RECEIVED"
+    INBOX_REPLY_DRAFTED = "INBOX_REPLY_DRAFTED"
+    CONNECTOR_AUTH_STARTED = "CONNECTOR_AUTH_STARTED"
+    CONNECTOR_AUTH_SUCCESS = "CONNECTOR_AUTH_SUCCESS"
+    CONNECTOR_AUTH_REVOKED = "CONNECTOR_AUTH_REVOKED"
+    CONNECTOR_SYNC_EXECUTED = "CONNECTOR_SYNC_EXECUTED"
+    EXTERNAL_DATA_RECEIVED = "EXTERNAL_DATA_RECEIVED"
+    SYNC_ACTION_QUEUED = "SYNC_ACTION_QUEUED"
+    PERFORMANCE_RECALCULATED = "PERFORMANCE_RECALCULATED"
+    MARKET_MATCH_FOUND = "MARKET_MATCH_FOUND"
+    AI_BRIEFING_GENERATED = "AI_BRIEFING_GENERATED"
+    DAILY_BRIEF_GENERATED = "DAILY_BRIEF_GENERATED"
+    WIDGET_VIEWED = "WIDGET_VIEWED"
+    COMMAND_CENTER_OPENED = "COMMAND_CENTER_OPENED"
+
+
+async def log_event(wid, event_type: Union[str, EventType], message, payload: Optional[Any] = None):
+    try:
+        et = event_type.value if isinstance(event_type, EventType) else event_type
+        doc = Event(workspace_id=wid, type=et, message=message, payload=payload).model_dump()
+        doc["created_at"] = doc["created_at"].isoformat()
+        await db.events.insert_one(doc)
+        logger.info(f"EVENT [{et}] {message}")
+    except Exception as e:
+        logger.error(f"log_event failed: {e}")

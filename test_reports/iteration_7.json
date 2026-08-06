@@ -1,0 +1,34 @@
+{
+  "summary": "Phase 14 (P1): Real TradeMe connector behind the existing connect/sync endpoints. Implemented services/integrations/trademe.py with OAuth 1.0a (request token -> authorize URL -> verifier callback via POST /api/integrations/{platform}/oauth/callback), Fernet-encrypted tokens at rest (CONNECTOR_ENCRYPTION_KEY; never exposed by GET /integrations), and live sync that creates PENDING approval-gated reduce_price suggestions from TradeMe listing anchors + search fallback. The adapter is staged: without TRADEME_CONSUMER_KEY/SECRET the legacy simulated toggle/sync is preserved so the preview and isolation suites keep passing. Network calls run via asyncio.to_thread and are patchable in tests. Frontend IntegrationHub opens the authorize URL and handles the OAuth callback redirect. Verified with 6 new tests (full local suite 58 passed, 2 skipped) plus a live uvicorn smoke test (5 connectors seeded, no token leakage, legacy connect/sync intact, callback 404 when unconfigured).",
+  "backend_issues": {
+    "critical_bugs": [],
+    "minor_bugs": [],
+    "flaky_endpoints": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "passed_tests": [
+    "CONNECTORS: 5 platforms seeded; tokens/config never exposed by GET /integrations",
+    "LEGACY: unconfigured TradeMe connect toggles connected, sync returns simulated note, disconnect works, sync blocked when disconnected, oauth callback -> 404",
+    "OAUTH: connect returns authorization_required + authorize URL; stored OAuth state encrypted at rest",
+    "OAUTH: mismatched verifier token -> 400; correct verifier -> connected with tokens encrypted at rest and sync_enabled=true",
+    "SYNC: live sync queues exactly one pending reduce_price suggestion from a TradeMe anchor",
+    "SYNC: no listing mutation until the user approves (control layer apply changes price to the anchor)",
+    "SYNC: idempotent re-sync keeps one pending suggestion (fresh id, no duplicates)",
+    "SYNC: search fallback used when no exact TradeMe listing match; anchor respected",
+    "SYNC: anchor >= 95% of current price -> no suggestion (threshold skip)",
+    "HTTP SMOKE: integrations list without token leakage; legacy connect/sync; unconfigured callback -> 404"
+  ],
+  "skipped_tests": [
+    "test_core.py / test_core2.py POC tests skipped without a real EMERGENT_LLM_KEY"
+  ],
+  "known_remaining": [
+    "Live end-to-end validation with real TradeMe credentials + registered callback URL",
+    "Other real connectors (Facebook Marketplace, Gmail) behind the adapter seam",
+    "Financials + object storage for base64 images; background queue for analyze-all",
+    "Communications hub; workflow engine (Kanban/Calendar/Timeline); global search + notifications + roles"
+  ]
+}

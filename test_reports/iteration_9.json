@@ -1,0 +1,31 @@
+{
+  "summary": "Phase 15b (P1): Sales tracking -> realized P&L. Backend: Item model gains sold/sold_at/sale_price; POST /api/items/{id}/mark-sold (sale_price >= 0, optional sold_at; 422 negative, 404 cross-workspace) and POST /api/items/{id}/mark-unsold (revert); ITEM_SOLD / ITEM_UNSOLD audit events. services/financials.py now splits the books: sold items use their actual sale price for REALIZED totals (realized_revenue, realized_fees, realized_tax, realized_net_profit, realized_margin_pct), open items stay POTENTIAL (potential_*), combined net_profit/net_margin_pct, per-row status + sale_price, per-category sold counts, and an updated note explaining realized vs potential. Frontend: ItemDetail Mark Sold flow (inline sale-price input, confirm, revert), ItemCard Sold chip, Financials page realized/potential stat cards + Status column. Verified with 4 new backend tests (full local suite 66 passed, 2 skipped) plus an esbuild syntax-check of every touched frontend file.",
+  "backend_issues": {
+    "critical_bugs": [],
+    "minor_bugs": [],
+    "flaky_endpoints": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "passed_tests": [
+    "MARK-SOLD: POST /items/{id}/mark-sold sets sold=true, sale_price=220.0, sold_at; ITEM_SOLD event logged; GET /items/{id} reflects state",
+    "MARK-SOLD VALIDATION: negative sale_price -> 422; foreign workspace header -> 404 and item untouched",
+    "MARK-UNSOLD: reverts sold/sale_price/sold_at; ITEM_UNSOLD event logged",
+    "FINANCIALS REALIZED: sold 220 / cost 100 / tax 10% -> realized fees 17.38, tax 12.00, net 90.62, margin 41.2%",
+    "FINANCIALS POTENTIAL: open item estimate 200 / cost 100 / tax 10% -> potential net 74.20 (excluded from realized)",
+    "FINANCIALS COMBINED: net_profit 164.82 (90.62 realized + 74.20 potential), net_margin 39.2%, invested 200.00, sold count 1",
+    "FINANCIALS ROWS: sold row status=sold with sale_price; per-category sold counts (Electronics 1, Furniture 0)",
+    "REGRESSION: full local suite 66 passed / 2 skipped (36.4s, xdist loadscope)"
+  ],
+  "skipped_tests": [
+    "test_core.py / test_core2.py POC tests skipped without a real EMERGENT_LLM_KEY"
+  ],
+  "known_remaining": [
+    "Object storage for base64 images + thumbnails; background queue for analyze-all",
+    "Live TradeMe end-to-end validation; other real connectors (Facebook Marketplace, Gmail)",
+    "Communications hub; workflow engine (Kanban/Calendar/Timeline); global search + notifications + roles"
+  ]
+}

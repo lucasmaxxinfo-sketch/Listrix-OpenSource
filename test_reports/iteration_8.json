@@ -1,0 +1,31 @@
+{
+  "summary": "Phase 15 (P1): Financials. Backend services/financials.py + GET /api/financials (workspace-scoped): per-item rows (cost, price from listing -> fallback value_estimate.mid, gross, 7.9% marketplace fee via config.MARKETPLACE_FEE_RATE, tax from workspace tax_rate, net, margin_pct), totals (invested, potential_revenue, net_profit, net_margin_pct), by_category aggregation, and an explicit note that all figures are POTENTIAL until completed sales are tracked. Items without both cost and price are skipped. Frontend: getFinancials/useFinancials, new Financials page (totals cards, category table, top-items table, currency-aware money formatting) registered in Sidebar, AppShell and App routes. Verified with 4 new backend tests (full local suite 62 passed, 2 skipped) plus an esbuild syntax-check of every touched frontend file.",
+  "backend_issues": {
+    "critical_bugs": [],
+    "minor_bugs": [],
+    "flaky_endpoints": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "passed_tests": [
+    "FINANCIALS MATH: cost 100 / price 200 -> gross 100.00, fees 15.80 (7.9%), tax 10.00 (10%), net 74.20, margin 37.1%; totals invested 150.00, potential revenue 280.00, net profit 94.88, net margin 33.9%",
+    "FINANCIALS FALLBACK: unlisted item priced from value_estimate.mid (80.00) with listed=false; fees 6.32, net 20.68, margin 25.9%",
+    "FINANCIALS CATEGORIES: by_category aggregates count/invested/potential_revenue/gross/net per category",
+    "FINANCIALS ISOLATION: workspace A totals never include workspace B items",
+    "FINANCIALS CURRENCY: NZD workspace returns currency NZD, default tax_rate 0.0; net 84.20 on 200 price / 100 cost",
+    "FINANCIALS SKIP: items with neither cost nor price are excluded from totals and rows",
+    "REG.RESSION: full local suite 62 passed / 2 skipped (24.08s, xdist loadscope)"
+  ],
+  "skipped_tests": [
+    "test_core.py / test_core2.py POC tests skipped without a real EMERGENT_LLM_KEY"
+  ],
+  "known_remaining": [
+    "Sales tracking (mark sold + sale price) to convert potential P&L into realized P&L",
+    "Object storage for base64 images + thumbnails; background queue for analyze-all",
+    "Live TradeMe end-to-end validation; other real connectors (Facebook Marketplace, Gmail)",
+    "Communications hub; workflow engine (Kanban/Calendar/Timeline); global search + notifications + roles"
+  ]
+}

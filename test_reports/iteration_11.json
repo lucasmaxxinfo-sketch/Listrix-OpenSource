@@ -1,0 +1,25 @@
+{
+  "summary": "Phase 25 - Open-source / zero-cost migration: LLM defaults to LOCAL Ollama (LLM_BASE_URL=http://localhost:11434/v1, LLM_MODEL=llama3.2-vision, open weights; API-key gate removed; blank LLM_BASE_URL is treated as unset so a missing env var can never silently call a paid endpoint like api.openai.com). Google Fonts CDN removed - Inter + Roboto Mono self-hosted as variable woff2 under frontend/src/fonts/ (webpack-bundled into build/static/media; no external font refs in production build). AI Control UI label corrected to 'local ollama / llama3.2-vision'. GitHub: repo initialized (main), .gitignore covers env/venv/build/secrets, CI workflow (backend pytest + frontend yarn build) and GitHub Pages deploy workflow added. Self-hosting: docker-compose.yml + backend/frontend Dockerfiles (MongoDB Community + FastAPI + nginx). Docs rewritten for the free stack (BUILDER_BRIEF, HANDOVER 26-30, PROJECT_STATE, diary). Live marketplace connectors (TradeMe/Facebook/Gmail) remain staged/optional - off by default, simulated without credentials.",
+  "backend_issues": {
+    "critical_bugs": [],
+    "minor_bugs": [
+      "AI features need a reachable Ollama server; without one they error clearly (app fully works otherwise) - by design"
+    ],
+    "flaky_endpoints": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "passed_tests": [
+    "LLM: call_llm works with no API key (local endpoint) - key gate removed",
+    "LLM: config defaults - LLM_BASE_URL=http://localhost:11434/v1, LLM_MODEL=llama3.2-vision, LLM_API_KEY=''",
+    "LLM: empty LLM_BASE_URL env is treated as unset (falls back to local Ollama, never a paid endpoint)",
+    "BACKEND SUITE: 88 passed / 3 skipped (skips = live-LLM POCs, opt-in via LISTRIX_RUN_LIVE_LLM_TESTS=1)",
+    "FRONTEND: production yarn build succeeds; fonts bundled as build/static/media/*.woff2",
+    "FRONTEND: no googleapis/gstatic references remain in the production build",
+    "esbuild compile check passes with --loader:.woff2=file"
+  ],
+  "evidence": "backend suite 88 passed / 3 skipped; frontend yarn build clean; git repo initialized with secrets excluded; CI + Pages workflows written"
+}

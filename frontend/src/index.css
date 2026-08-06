@@ -1,0 +1,138 @@
+/* Self-hosted open-source fonts (Inter + Roboto Mono) — no external font CDN. */
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("./fonts/inter.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Roboto Mono";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("./fonts/robotomono.woff2") format("woff2");
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    margin: 0;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+        "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+code,
+.font-mono {
+    font-family: "Roboto Mono", source-code-pro, Menlo, Monaco, Consolas, monospace;
+}
+
+@layer base {
+    /* Listrix runs in dark industrial mode by default: :root carries the dark palette */
+    :root {
+        --background: 220 18% 6%;
+        --foreground: 210 18% 92%;
+
+        --card: 220 16% 9%;
+        --card-foreground: 210 18% 92%;
+
+        --popover: 220 16% 9%;
+        --popover-foreground: 210 18% 92%;
+
+        --primary: 24 95% 55%;
+        --primary-foreground: 220 18% 8%;
+
+        --secondary: 220 14% 12%;
+        --secondary-foreground: 210 18% 92%;
+
+        --muted: 220 12% 14%;
+        --muted-foreground: 215 12% 68%;
+
+        --accent: 24 95% 55%;
+        --accent-foreground: 220 18% 8%;
+
+        --destructive: 0 72% 52%;
+        --destructive-foreground: 210 18% 96%;
+
+        --border: 220 10% 18%;
+        --input: 220 10% 18%;
+        --ring: 24 95% 55%;
+
+        --chart-1: 24 95% 55%;
+        --chart-2: 160 60% 45%;
+        --chart-3: 210 70% 55%;
+        --chart-4: 45 90% 55%;
+        --chart-5: 0 72% 52%;
+
+        --radius: 0.75rem;
+
+        --lx-surface-0: 220 18% 6%;
+        --lx-surface-1: 220 16% 9%;
+        --lx-surface-2: 220 14% 12%;
+        --lx-surface-3: 220 12% 14%;
+
+        --lx-orange: 24 95% 55%;
+        --lx-blue: 210 85% 60%;
+        --lx-green: 145 62% 48%;
+        --lx-purple: 270 65% 62%;
+    }
+
+    .dark {
+        --background: 220 18% 6%;
+        --foreground: 210 18% 92%;
+        --card: 220 16% 9%;
+        --card-foreground: 210 18% 92%;
+        --popover: 220 16% 9%;
+        --popover-foreground: 210 18% 92%;
+        --primary: 24 95% 55%;
+        --primary-foreground: 220 18% 8%;
+        --secondary: 220 14% 12%;
+        --secondary-foreground: 210 18% 92%;
+        --muted: 220 12% 14%;
+        --muted-foreground: 215 12% 68%;
+        --accent: 24 95% 55%;
+        --accent-foreground: 220 18% 8%;
+        --destructive: 0 72% 52%;
+        --destructive-foreground: 210 18% 96%;
+        --border: 220 10% 18%;
+        --input: 220 10% 18%;
+        --ring: 24 95% 55%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+/* Subtle industrial noise texture for large background wrappers */
+.lx-noise {
+    background-image: radial-gradient(
+        circle at 1px 1px,
+        rgba(255, 255, 255, 0.035) 1px,
+        transparent 0
+    );
+    background-size: 18px 18px;
+}
+
+/* Thin scrollbars for the dark theme */
+.lx-scroll::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+.lx-scroll::-webkit-scrollbar-thumb {
+    background: hsl(220 10% 22%);
+    border-radius: 8px;
+}
+.lx-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}

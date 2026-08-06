@@ -1,0 +1,47 @@
+════════════════════════════════════════════════════════════════
+  LISTRIX — HOW TO OPEN YOUR APP (no tech skills needed)
+════════════════════════════════════════════════════════════════
+
+WHAT THIS IS
+  Listrix is your reseller business app. It lives on YOUR computer.
+  Nothing is sent to paid companies. Free and private.
+
+WHAT YOU NEED ON YOUR COMPUTER (one-time, free)
+  1. Docker (free)  — from https://www.docker.com/products/docker-desktop
+     This runs the app for you. Install it, open it once, leave it running.
+  2. Ollama (free)  — from https://ollama.com/download
+     This is the AI brain. Install it, open it once.
+
+HOW TO OPEN YOUR APP (every time)
+  Windows:
+      Double-click  START-LISTRIX.bat
+  Mac / Linux:
+      Double-click  start-listrix.command   (first time: right-click → Open)
+
+  Then open your internet browser and go to:  http://localhost
+  (Chrome or Edge work best.)
+
+FIRST-TIME SETUP OF THE AI BRAIN (once, ~5 minutes)
+  When the app opens, AI features will say the brain is not connected yet.
+  To switch it on:
+    Windows:  press Win+R, type  cmd, press Enter.
+              Type:  ollama pull llama3.2-vision   and press Enter.
+    Mac:      open the Terminal app.
+              Type:  ollama pull llama3.2-vision   and press Enter.
+  Wait until it finishes downloading (one-time), then refresh the app.
+
+STOPPING THE APP
+  Close the black window that appeared when you started it.
+  (Your data is saved — closing the window doesn't delete anything.)
+
+WHERE YOUR DATA LIVES
+  Inside a hidden folder created by Docker. It stays on your computer.
+  To back it up later, just tell me and I'll write you a one-click backup.
+
+TROUBLE? 
+  Tell me exactly what you see (or a photo of the screen) and I'll fix it.
+
+────────────────────────────────────────────────────────────────
+  You don't need to understand any of the above. It's for whoever
+  sets up the computer. You can stop reading here.
+────────────────────────────────────────────────────────────────

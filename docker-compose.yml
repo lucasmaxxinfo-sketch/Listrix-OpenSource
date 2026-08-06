@@ -1,0 +1,43 @@
+# Listrix — 100% free, open-source self-hosted stack.
+#   docker compose up --build
+# Runs MongoDB (Community), the FastAPI backend, and the static frontend on one machine.
+# AI runs on your LOCAL Ollama (open source): start it on the host with
+#   ollama serve && ollama pull llama3.2-vision
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      MONGO_URL: mongodb://mongo:27017
+      DB_NAME: listrix
+      CORS_ORIGINS: "*"
+      JWT_SECRET: ${JWT_SECRET:-please-set-a-long-random-secret-string}
+      CONNECTOR_ENCRYPTION_KEY: ${CONNECTOR_ENCRYPTION_KEY:-}
+      LLM_BASE_URL: ${LLM_BASE_URL:-http://host.docker.internal:11434/v1}
+      LLM_MODEL: ${LLM_MODEL:-llama3.2-vision}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - mongo
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL:-http://localhost:8000}
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  mongo_data:

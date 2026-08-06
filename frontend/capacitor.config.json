@@ -1,0 +1,8 @@
+{
+  "appId": "com.listrix.app",
+  "appName": "Listrix",
+  "webDir": "build",
+  "server": {
+    "androidScheme": "https"
+  }
+}
