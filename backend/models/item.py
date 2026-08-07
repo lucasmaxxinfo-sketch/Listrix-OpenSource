@@ -52,6 +52,10 @@ class Item(BaseModel):
     category: Optional[str] = None
     vision: Optional[Dict[str, Any]] = None
     value_estimate: Optional[Dict[str, Any]] = None
+    source: Optional[str] = None
+    external_ref: Optional[str] = None
+    stock_qty: Optional[int] = None
+    synced_at: Optional[datetime] = None
     listed_at: Optional[datetime] = None
     times_relisted: int = 0
     stage: str = "inventory"  # inventory | listed | sold | archived

@@ -117,6 +117,10 @@ Inbox: `POST /inbox/refresh`, `GET /inbox` · Events: `GET /events`, `POST /clie
   adapters (staged, optional), inbox reply drafts, item lifecycle stages + Kanban/Timeline, global
   search, CSV import, event analytics, and workspace members/roles. **83 passed / 2 skipped**
   (`test_reports/iteration_10.json`).
+- **DJ-deck redesign + Stocksix sync + AI status (Phase 26): COMPLETE** — DJ-deck UI (3D panels,
+  glowing buttons, neon accents, equalizer bars), Stocksix inventory connector (wizard + idempotent
+  sync via `GET /api/public/v1/inventory`), Integration Hub offline fallback, `GET /api/ai/status`
+  probe + AI-status banner + real sidebar AI light. **92 passed / 3 skipped**.
 - **Open-source/zero-cost migration: COMPLETE** — LLM defaults to local Ollama (no key, no paid
   API; blank `LLM_BASE_URL` can no longer silently fall back to a paid endpoint), Google Fonts CDN
   removed (self-hosted Inter/Roboto Mono), GitHub Actions CI + GitHub Pages deploy added,

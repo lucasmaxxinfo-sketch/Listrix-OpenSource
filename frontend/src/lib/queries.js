@@ -11,6 +11,7 @@ export const useFinancials = () => useQuery({ queryKey: ["financials"], queryFn:
 export const useNotifications = (unread) => useQuery({ queryKey: ["notifications", unread ? "unread" : "all"], queryFn: () => A.getNotifications(unread) });
 export const useAnalytics = () => useQuery({ queryKey: ["analytics"], queryFn: A.getAnalytics });
 export const usePerformanceIntel = () => useQuery({ queryKey: ["perf-intel"], queryFn: A.getPerformanceIntelligence });
+export const useAIStatus = () => useQuery({ queryKey: ["ai-status"], queryFn: A.getAIStatus, refetchInterval: 60000 });
 
 function invalidateAll(qc) {
   ["items", "listings", "events", "performance", "suggestions", "brief", "perf-intel", "notifications", "inbox", "financials"].forEach((k) =>

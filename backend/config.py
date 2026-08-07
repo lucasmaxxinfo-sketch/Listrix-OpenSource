@@ -95,6 +95,13 @@ FACEBOOK_PAGE_ID = os.environ.get("FACEBOOK_PAGE_ID", "")
 # GMAIL_ACCESS_TOKEN to pull buyer messages into the inbox (read-only).
 GMAIL_ACCESS_TOKEN = os.environ.get("GMAIL_ACCESS_TOKEN", "")
 
+# Real Stocksix connector (services/integrations/stocksix.py). The owner's Stocksix
+# hub is a local-first open-source inventory app with a public bearer-key API:
+#   GET {STOCKSIX_BASE_URL}/api/public/v1/inventory
+# Wizard credentials (base_url + api_key) override these env fallbacks.
+STOCKSIX_BASE_URL = os.environ.get("STOCKSIX_BASE_URL", "")
+STOCKSIX_API_KEY = os.environ.get("STOCKSIX_API_KEY", "")
+
 # Financials reporting (services/financials.py): default marketplace fee rate as a fraction.
 MARKETPLACE_FEE_RATE = float(os.environ.get("MARKETPLACE_FEE_RATE", "0.079"))
 
@@ -109,6 +116,7 @@ CLIENT_EVENT_TYPES = {"WIDGET_VIEWED", "VOICE_QUERY_RECEIVED", "USER_APPROVED_AC
 SCOPED = ["items", "listings", "events", "performance", "suggestions", "price_history", "briefs", "feedback", "integrations", "inbox"]
 
 DEFAULT_CONNECTORS = [
+    {"platform": "Stocksix", "kind": "inventory", "auth_status": "disconnected", "permissions": ["read_inventory", "sync_items"], "sync_enabled": False},
     {"platform": "TradeMe", "kind": "marketplace", "auth_status": "disconnected", "permissions": ["read_listings", "create_listing_draft"], "sync_enabled": False},
     {"platform": "Facebook Marketplace", "kind": "marketplace", "auth_status": "disconnected", "permissions": ["read_listings"], "sync_enabled": False},
     {"platform": "Gmail", "kind": "communication", "auth_status": "disconnected", "permissions": ["read_messages"], "sync_enabled": False},

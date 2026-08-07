@@ -2,18 +2,20 @@ import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
 import {
   Loader2, Plug, RefreshCw, Store, Mail, LineChart, Users, Check, X,
-  ExternalLink, KeyRound, ShieldCheck, AlertTriangle, Lock,
+  ExternalLink, KeyRound, ShieldCheck, AlertTriangle, Lock, Boxes,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { formatTime } from "@/lib/derive";
 
 const KIND_ICON = { marketplace: Store, communication: Mail, data: LineChart };
-const PLATFORM_ICON = { "TradeMe": Store, "Facebook Marketplace": Store, "Gmail": Mail, "Pricing Signals": LineChart, "Competitor Listings": Users };
+const PLATFORM_ICON = { "Stocksix": Boxes, "TradeMe": Store, "Facebook Marketplace": Store, "Gmail": Mail, "Pricing Signals": LineChart, "Competitor Listings": Users };
 
 // Platforms with a real live adapter get the full wizard; the rest keep the legacy toggle.
-const WIZARD_PLATFORMS = new Set(["TradeMe", "Facebook Marketplace", "Gmail"]);
+const WIZARD_PLATFORMS = new Set(["Stocksix", "TradeMe", "Facebook Marketplace", "Gmail"]);
 
 const FIELD_LABELS = {
+  base_url: "Stocksix address (URL)",
+  api_key: "API Key",
   consumer_key: "Consumer Key",
   consumer_secret: "Consumer Secret",
   callback_url: "Callback URL",
@@ -23,6 +25,15 @@ const FIELD_LABELS = {
 };
 
 const GUIDE = {
+  "Stocksix": {
+    link: "https://github.com/lucasmaxxinfo-sketch/stocksix",
+    linkLabel: "Stocksix (your inventory hub — open source)",
+    steps: [
+      "Start the Stocksix app on this computer and open Settings → Integrations.",
+      "Create an API key (copy it) — it lets Listrix read your inventory.",
+      "Paste the key below, and set the address to where Stocksix is running (usually http://localhost:3000).",
+    ],
+  },
   "TradeMe": {
     link: "https://developer.trademe.co.nz",
     linkLabel: "trade.me/developer — free account",
@@ -62,6 +73,9 @@ function statusBadge(c) {
   if (c.configured) {
     return { label: "Configured · live", cls: "border-[rgba(59,130,246,0.35)] bg-[rgba(59,130,246,0.12)] text-blue-400", dot: "bg-blue-400" };
   }
+  if (c.mode === "offline") {
+    return { label: "Backend offline", cls: "border-red-500/30 bg-red-500/10 text-red-400", dot: "bg-red-400" };
+  }
   return { label: "Disconnected", cls: "border-border bg-muted/40 text-muted-foreground", dot: "bg-muted-foreground" };
 }
 
@@ -75,9 +89,24 @@ export default function IntegrationHub() {
   const [saving, setSaving] = useState(false);
   const [testResult, setTestResult] = useState(null);
 
+  const FALLBACK_ROWS = [
+    { platform: "Stocksix", kind: "inventory", auth_status: "disconnected", permissions: ["read_inventory", "sync_items"], sync_enabled: false, mode: "offline", note: "Backend offline — start Listrix on your computer to connect." },
+    { platform: "TradeMe", kind: "marketplace", auth_status: "disconnected", permissions: ["read_listings", "create_listing_draft"], sync_enabled: false, mode: "offline" },
+    { platform: "Facebook Marketplace", kind: "marketplace", auth_status: "disconnected", permissions: ["read_listings"], sync_enabled: false, mode: "offline" },
+    { platform: "Gmail", kind: "communication", auth_status: "disconnected", permissions: ["read_messages"], sync_enabled: false, mode: "offline" },
+    { platform: "Pricing Signals", kind: "data", auth_status: "disconnected", permissions: ["read_market_prices"], sync_enabled: false, mode: "offline" },
+    { platform: "Competitor Listings", kind: "data", auth_status: "disconnected", permissions: ["read_competitors"], sync_enabled: false, mode: "offline" },
+  ];
+
   const load = useCallback(async () => {
     setLoading(true);
-    try { const { data } = await api.get("/integrations/status"); setRows(data); } catch { toast.error("Failed to load connectors"); } finally { setLoading(false); }
+    try {
+      const { data } = await api.get("/integrations/status");
+      setRows(Array.isArray(data) && data.length ? data : FALLBACK_ROWS);
+    } catch {
+      setRows(FALLBACK_ROWS);
+      toast.error("Backend offline — showing the connection wizard in demo mode. Start Listrix on your computer to connect for real.");
+    } finally { setLoading(false); }
   }, []);
 
   // TradeMe OAuth callback: the provider redirects back with oauth_token + oauth_verifier.
@@ -172,7 +201,7 @@ export default function IntegrationHub() {
             const connected = c.auth_status === "connected";
             const isWizard = WIZARD_PLATFORMS.has(c.platform);
             return (
-              <div key={c.platform} data-testid="connector-card" className="flex flex-col rounded-xl border border-border bg-card/60 p-5 shadow-panelSoft">
+              <div key={c.platform} data-testid="connector-card" className="panel-3d flex flex-col rounded-xl p-5">
                 <div className="flex items-center justify-between">
                   <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted/40 text-foreground"><Icon size={20} /></span>
                   <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-semibold ${badge.cls}`}>

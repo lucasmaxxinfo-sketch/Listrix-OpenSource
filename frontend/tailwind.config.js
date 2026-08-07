@@ -18,9 +18,11 @@ module.exports = {
       },
       boxShadow: {
         panel: '0 10px 30px rgba(0,0,0,0.35)',
-        panelSoft: '0 6px 18px rgba(0,0,0,0.28)',
-        orangeGlow: '0 0 0 1px rgba(255,122,26,0.25), 0 10px 30px rgba(0,0,0,0.35)',
-        orangeGlowStrong: '0 0 0 1px rgba(255,122,26,0.35), 0 0 24px rgba(255,122,26,0.18), 0 14px 40px rgba(0,0,0,0.45)'
+        panelSoft: '0 8px 26px rgba(0,0,0,0.45)',
+        orangeGlow: '0 0 0 1px rgba(255,122,26,0.30), 0 0 14px rgba(255,122,26,0.25), 0 10px 30px rgba(0,0,0,0.40)',
+        orangeGlowStrong: '0 0 0 1px rgba(255,122,26,0.45), 0 0 26px rgba(255,122,26,0.35), 0 14px 44px rgba(0,0,0,0.50)',
+        cyanGlow: '0 0 0 1px rgba(34,211,238,0.25), 0 0 18px rgba(34,211,238,0.20)',
+        magentaGlow: '0 0 0 1px rgba(217,70,239,0.25), 0 0 18px rgba(217,70,239,0.20)'
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -80,11 +82,21 @@ module.exports = {
           to: {
             height: '0'
           }
+        },
+        'lx-eq': {
+          '0%, 100%': { height: '25%' },
+          '50%': { height: '100%' }
+        },
+        'lx-glow-pulse': {
+          '0%, 100%': { opacity: '0.75' },
+          '50%': { opacity: '1' }
         }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out'
+        'accordion-up': 'accordion-up 0.2s ease-out',
+        'lx-eq': 'lx-eq 1s ease-in-out infinite',
+        'lx-glow-pulse': 'lx-glow-pulse 2.4s ease-in-out infinite'
       }
     }
   },

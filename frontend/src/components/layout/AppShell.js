@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useLocation, useNavigate, NavLink } from "react-router-dom";
 import { Menu, X, Plus, Sparkles, Boxes, LayoutDashboard, Package, Workflow, Store, Cpu, Bell, Wallet, Search, CheckCheck } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar";
+import AIStatusBanner from "@/components/AIStatusBanner";
 import { useNotifications, useMarkAllNotificationsRead } from "@/lib/queries";
 
 const TITLES = {
@@ -82,9 +83,10 @@ export const AppShell = ({ children }) => {
               <Menu size={22} />
             </button>
             <div className="min-w-0">
-              <h1 className="text-lg font-semibold tracking-tight truncate">{meta.title}</h1>
+              <h1 className="neon-title text-lg font-semibold tracking-tight truncate">{meta.title}</h1>
               <p className="text-xs text-muted-foreground truncate">{meta.sub}</p>
             </div>
+            <div className="eq hidden sm:flex" aria-hidden="true"><span /><span /><span /><span /><span /><span /></div>
             <form onSubmit={submitSearch} className="ml-3 hidden lg:block" data-testid="global-search">
               <div className="relative">
                 <Search size={14} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -153,6 +155,7 @@ export const AppShell = ({ children }) => {
           </div>
         </header>
 
+        <AIStatusBanner />
         <main className="flex-1 p-4 md:p-6 lx-scroll overflow-x-hidden">{children}</main>
       </div>
     </div>

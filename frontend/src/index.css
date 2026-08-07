@@ -25,6 +25,12 @@ body {
         "Helvetica Neue", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: hsl(var(--background));
+    background-image:
+        radial-gradient(1100px 560px at 72% -10%, rgba(255, 122, 26, 0.08), transparent 60%),
+        radial-gradient(900px 520px at -10% 110%, rgba(34, 211, 238, 0.07), transparent 60%),
+        radial-gradient(800px 520px at 110% 45%, rgba(217, 70, 239, 0.05), transparent 60%);
+    background-attachment: fixed;
 }
 
 code,
@@ -33,9 +39,9 @@ code,
 }
 
 @layer base {
-    /* Listrix runs in dark industrial mode by default: :root carries the dark palette */
+    /* DJ-deck palette: deep stage-black + neon orange/cyan/magenta. */
     :root {
-        --background: 220 18% 6%;
+        --background: 220 18% 5%;
         --foreground: 210 18% 92%;
 
         --card: 220 16% 9%;
@@ -71,7 +77,7 @@ code,
 
         --radius: 0.75rem;
 
-        --lx-surface-0: 220 18% 6%;
+        --lx-surface-0: 220 18% 5%;
         --lx-surface-1: 220 16% 9%;
         --lx-surface-2: 220 14% 12%;
         --lx-surface-3: 220 12% 14%;
@@ -80,10 +86,12 @@ code,
         --lx-blue: 210 85% 60%;
         --lx-green: 145 62% 48%;
         --lx-purple: 270 65% 62%;
+        --lx-cyan: 187 92% 55%;
+        --lx-magenta: 295 72% 60%;
     }
 
     .dark {
-        --background: 220 18% 6%;
+        --background: 220 18% 5%;
         --foreground: 210 18% 92%;
         --card: 220 16% 9%;
         --card-foreground: 210 18% 92%;
@@ -114,6 +122,127 @@ code,
     }
 }
 
+@layer components {
+    /* ================= DJ-deck 3D panels ================= */
+    [class~="bg-card"] {
+        background-image: linear-gradient(180deg, hsl(220 16% 11%), hsl(220 16% 8.5%));
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.05),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+            0 8px 26px rgba(0, 0, 0, 0.35);
+    }
+
+    .panel-3d {
+        position: relative;
+        background-image: linear-gradient(180deg, hsl(220 14% 12%), hsl(220 16% 8.5%));
+        border: 1px solid hsl(var(--border));
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.07),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.55),
+            0 10px 30px rgba(0, 0, 0, 0.45);
+        transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .panel-3d:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 122, 26, 0.4);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.09),
+            0 0 22px rgba(255, 122, 26, 0.14),
+            0 16px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ================= glowing primary buttons ================= */
+    button[class~="bg-primary"],
+    a[class~="bg-primary"] {
+        background-image: linear-gradient(180deg, hsl(24 95% 62%), hsl(24 95% 46%));
+        border: 1px solid rgba(255, 190, 110, 0.55);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.35),
+            inset 0 -2px 0 rgba(0, 0, 0, 0.25),
+            0 0 16px rgba(255, 122, 26, 0.35),
+            0 8px 24px rgba(0, 0, 0, 0.4);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        transition: transform 0.12s ease, box-shadow 0.18s ease, filter 0.18s ease;
+    }
+    button[class~="bg-primary"]:hover,
+    a[class~="bg-primary"]:hover {
+        filter: brightness(1.08);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.4),
+            0 0 26px rgba(255, 122, 26, 0.55),
+            0 10px 30px rgba(0, 0, 0, 0.45);
+    }
+    button[class~="bg-primary"]:active,
+    a[class~="bg-primary"]:active {
+        transform: translateY(1px) scale(0.99);
+        box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.45);
+    }
+
+    /* ================= glowing secondary buttons ================= */
+    button[class~="bg-secondary"],
+    a[class~="bg-secondary"] {
+        background-image: linear-gradient(180deg, hsl(220 12% 16%), hsl(220 14% 10.5%));
+        border: 1px solid rgba(34, 211, 238, 0.22);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.06),
+            0 4px 14px rgba(0, 0, 0, 0.35);
+        transition: border-color 0.18s ease, box-shadow 0.18s ease, color 0.18s ease, transform 0.12s ease;
+    }
+    button[class~="bg-secondary"]:hover,
+    a[class~="bg-secondary"]:hover {
+        border-color: rgba(34, 211, 238, 0.55);
+        box-shadow:
+            0 0 16px rgba(34, 211, 238, 0.2),
+            0 6px 18px rgba(0, 0, 0, 0.4);
+        color: hsl(185 90% 72%);
+    }
+    button[class~="bg-secondary"]:active,
+    a[class~="bg-secondary"]:active {
+        transform: translateY(1px);
+    }
+
+    /* ================= neon text + glow value ================= */
+    .neon-title {
+        color: #fff;
+        text-shadow:
+            0 0 8px rgba(255, 122, 26, 0.55),
+            0 0 22px rgba(255, 122, 26, 0.3),
+            0 1px 2px rgba(0, 0, 0, 0.6);
+    }
+    .lx-glow-value {
+        text-shadow: 0 0 14px rgba(255, 122, 26, 0.4);
+    }
+    .lx-glow-green {
+        text-shadow: 0 0 12px rgba(52, 211, 153, 0.45);
+    }
+
+    /* ================= equalizer bars (DJ signature) ================= */
+    .eq {
+        display: inline-flex;
+        align-items: flex-end;
+        gap: 2px;
+        height: 14px;
+    }
+    .eq span {
+        display: block;
+        width: 3px;
+        height: 40%;
+        border-radius: 2px;
+        background: linear-gradient(180deg, hsl(var(--lx-cyan)), hsl(var(--lx-orange)));
+        box-shadow: 0 0 7px rgba(34, 211, 238, 0.8);
+        animation: lx-eq 1s ease-in-out infinite;
+    }
+    .eq span:nth-child(2) { animation-delay: 0.18s; }
+    .eq span:nth-child(3) { animation-delay: 0.36s; }
+    .eq span:nth-child(4) { animation-delay: 0.54s; }
+    .eq span:nth-child(5) { animation-delay: 0.72s; }
+    .eq span:nth-child(6) { animation-delay: 0.9s; }
+    @keyframes lx-eq {
+        0%, 100% { height: 25%; }
+        50% { height: 100%; }
+    }
+}
+
 /* Subtle industrial noise texture for large background wrappers */
 .lx-noise {
     background-image: radial-gradient(
@@ -124,13 +253,13 @@ code,
     background-size: 18px 18px;
 }
 
-/* Thin scrollbars for the dark theme */
+/* Thin neon scrollbars for the dark theme */
 .lx-scroll::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
 .lx-scroll::-webkit-scrollbar-thumb {
-    background: hsl(220 10% 22%);
+    background: linear-gradient(180deg, hsl(220 10% 24%), hsl(24 60% 35%));
     border-radius: 8px;
 }
 .lx-scroll::-webkit-scrollbar-track {

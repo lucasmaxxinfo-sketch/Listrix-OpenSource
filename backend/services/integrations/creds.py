@@ -12,6 +12,10 @@ logger = logging.getLogger(__name__)
 
 # Field labels shown in the Connection Wizard, per platform.
 PLATFORM_CRED_FIELDS = {
+    "Stocksix": {
+        "base_url": "Stocksix address (URL, e.g. http://localhost:3000)",
+        "api_key": "API Key (Stocksix → Settings → Integrations)",
+    },
     "TradeMe": {
         "consumer_key": "Consumer Key",
         "consumer_secret": "Consumer Secret",
@@ -28,6 +32,8 @@ PLATFORM_CRED_FIELDS = {
 
 def _env_creds(platform: str) -> dict:
     """Environment-variable credentials, read live so tests/monkeypatches stay accurate."""
+    if platform == "Stocksix":
+        return {"base_url": config.STOCKSIX_BASE_URL, "api_key": config.STOCKSIX_API_KEY}
     if platform == "TradeMe":
         return {"consumer_key": config.TRADEME_CONSUMER_KEY,
                 "consumer_secret": config.TRADEME_CONSUMER_SECRET,

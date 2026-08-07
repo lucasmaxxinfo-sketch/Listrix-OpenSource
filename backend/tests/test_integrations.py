@@ -55,7 +55,7 @@ def seed_connector_docs(client, wid):
 def test_connectors_seeded_and_tokens_never_exposed(client):
     wid = make_workspace(client)
     conns = client.get("/api/integrations", headers=headers(wid)).json()
-    assert {c["platform"] for c in conns} == {"TradeMe", "Facebook Marketplace", "Gmail", "Pricing Signals", "Competitor Listings"}
+    assert {c["platform"] for c in conns} == {"Stocksix", "TradeMe", "Facebook Marketplace", "Gmail", "Pricing Signals", "Competitor Listings"}
     assert all("tokens" not in c and "config" not in c for c in conns)
 
 

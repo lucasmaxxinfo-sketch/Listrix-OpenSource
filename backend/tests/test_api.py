@@ -287,8 +287,8 @@ def test_integrations_connect_sync_and_isolation(client):
     a = create_workspace(client, "Int A")
     b = create_workspace(client, "Int B")
     conns = client.get("/api/integrations", headers=headers(a)).json()
-    assert len(conns) == 5
-    assert {c["platform"] for c in conns} == {"TradeMe", "Facebook Marketplace", "Gmail", "Pricing Signals", "Competitor Listings"}
+    assert len(conns) == 6
+    assert {c["platform"] for c in conns} == {"Stocksix", "TradeMe", "Facebook Marketplace", "Gmail", "Pricing Signals", "Competitor Listings"}
     # sync before connect -> 400
     assert client.post("/api/integrations/TradeMe/sync", headers=headers(a)).status_code == 400
     connected = client.post("/api/integrations/TradeMe/connect", headers=headers(a)).json()

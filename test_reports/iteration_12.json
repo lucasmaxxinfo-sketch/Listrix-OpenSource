@@ -1,0 +1,14 @@
+{
+  "summary": "Owner feedback round: (1) Stocksix inventory connector - new adapter (services/integrations/stocksix.py) reads GET {base}/api/public/v1/inventory with a bearer key; wizard card with base_url + api_key (encrypted); user-initiated sync creates/updates workspace items (source=stocksix, external_ref, stock_qty), logs events, never auto-posts. Seeded as first connector; env fallbacks STOCKSIX_BASE_URL/STOCKSIX_API_KEY. (2) Integration Hub no longer looks missing on the backend-less GitHub Pages demo: offline fallback renders all 6 connector cards + explanatory banner. (3) AI status: GET /api/ai/status cached probe + AIStatusBanner (offline AI / offline backend states) + real sidebar AI light. (4) DJ-deck UI: stage-light radial backgrounds, 3D gradient panels with inset highlights and hover lift, glowing gradient primary buttons + cyan-glow secondary buttons, neon titles/values, animated equalizer bars, neon scrollbars, glow active nav.",
+  "backend_issues": { "critical_bugs": [], "minor_bugs": [], "flaky_endpoints": [] },
+  "frontend_issues": { "ui_bugs": [], "integration_issues": [], "design_issues": [] },
+  "passed_tests": [
+    "STOCKSIX: connector seeded with kind=inventory, no tokens exposed",
+    "STOCKSIX: wizard save -> configured; test -> ok; connect -> connected; sync creates 2 items with source/external_ref/stock_qty",
+    "STOCKSIX: second sync is idempotent (0 created, items updated in place)",
+    "AI STATUS: /api/ai/status reports reachable=false with detail when the LLM probe fails, true when it succeeds",
+    "BACKEND SUITE: 92 passed / 3 skipped",
+    "FRONTEND: esbuild compile clean; production yarn build succeeds with new DJ-deck CSS"
+  ],
+  "evidence": "backend 92 passed / 3 skipped; frontend build clean; demo site redeploy pending"
+}

@@ -1,6 +1,6 @@
 export const StatCard = ({ label, value, icon: Icon, accent }) => {
   return (
-    <div className="rounded-xl border border-border bg-card/60 p-4 shadow-panelSoft">
+    <div className="panel-3d rounded-xl p-4">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground">{label}</span>
         {Icon && (
@@ -9,7 +9,7 @@ export const StatCard = ({ label, value, icon: Icon, accent }) => {
           </span>
         )}
       </div>
-      <p className="text-2xl font-semibold tabular-nums">{value}</p>
+      <p className={`text-2xl font-semibold tabular-nums ${accent ? "lx-glow-value" : ""}`}>{value}</p>
     </div>
   );
 };

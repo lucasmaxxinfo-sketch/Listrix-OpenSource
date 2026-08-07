@@ -56,7 +56,7 @@ def test_register_creates_owned_default_workspace_with_connectors(client):
     assert len(mine) >= 1
     assert any(w["is_default"] for w in mine)
     conns = client.get("/api/integrations", headers={**auth(data["access_token"]), "X-Workspace-Id": mine[0]["id"]}).json()
-    assert len(conns) == 5
+    assert len(conns) == 6
 
 
 def test_duplicate_email_rejected(client):

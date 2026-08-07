@@ -22,6 +22,9 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// ai status (probe is cached server-side ~30s)
+export const getAIStatus = () => api.get("/ai/status").then((r) => r.data);
+
 // auth
 export const login = (d) => api.post("/auth/login", d).then((r) => r.data);
 export const register = (d) => api.post("/auth/register", d).then((r) => r.data);

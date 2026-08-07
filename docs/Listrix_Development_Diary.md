@@ -447,3 +447,38 @@ the whole stack on open-source software, using GitHub for CI/hosting.
 - Live connector validation with real credentials (optional external marketplaces).
 - Sales P&L refinements: per-sale COGS + marketplace payout reconciliation.
 - Object storage for images (S3-compatible/MinIO — both open source) if Mongo blobs outgrow.
+
+---
+
+### Session — DJ-deck redesign, Stocksix sync, AI status visibility
+
+**Why:** owner feedback round — (1) the Integration Wizard looked missing, (2) AI agent areas
+appeared broken, (3) Listrix should link & sync inventory with the owner's Stocksix hub, (4) the UI
+should be a "DJ deck" with a 3D feel and glowing buttons.
+
+**What changed**
+- **Stocksix connector (real sync):** new `services/integrations/stocksix.py` adapter talks to the
+  owner's local-first Stocksix hub (`GET {base}/api/public/v1/inventory`, bearer key). Connection
+  Wizard gains a Stocksix card (address + API key, encrypted at rest, test/connect/sync). Sync is a
+  user-initiated inventory import: creates missing items, updates price/qty/category/description on
+  existing ones (matched by Stocksix item id), logs events, never posts or prices anything. Items
+  keep `source: stocksix` + `external_ref` + `stock_qty`. Seeded as the first connector.
+- **Integration Wizard no longer "missing":** on the free GitHub Pages demo (no backend reachable)
+  the Hub now renders all six connector cards in an explicit offline/demo state with a clear banner,
+  instead of an empty grid.
+- **AI status visibility:** new `GET /api/ai/status` (cheap cached probe of the local LLM) +
+  `AIStatusBanner` in the app shell — "AI brain isn't running yet / start the free Ollama app" or
+  "backend not connected" on the demo; the sidebar AI light is now real (online/offline).
+- **DJ-deck UI:** global design overhaul — stage-lighting radial glows, 3D panel treatment
+  (gradient surfaces, inset highlights, deep shadows, hover lift), glowing gradient primary buttons
+  with pressed state, cyan-glow secondary buttons, neon page titles, glowing stat values, animated
+  equalizer bars in the header, neon scrollbars, stronger active-nav glow. All styling stays
+  self-hosted and free.
+
+**Impact**
+- Backend suite: **92 passed / 3 skipped** (new Stocksix + AI-status tests).
+- Frontend production build clean; demo site still fully free (GitHub Pages).
+
+**Follow-ups (not yet done)**
+- Run the Stocksix sync against a live local Stocksix instance once the owner sets it up.
+- Per-sale COGS/payout reconciliation in Financials.

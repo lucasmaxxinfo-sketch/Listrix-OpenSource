@@ -89,6 +89,37 @@ def _client():
     return AsyncOpenAI(api_key=LLM_API_KEY or "sk-local", base_url=LLM_BASE_URL or None, timeout=60.0)
 
 
+_probe_cache = {}
+
+
+async def probe_llm():
+    """Cheap reachability probe of the configured LLM endpoint (cached ~30s).
+
+    Used by the UI status banner so users see a clear 'AI brain offline' state
+    instead of confusing per-request errors. Never caches model output.
+    """
+    now = time.monotonic()
+    cached = _probe_cache.get("last")
+    if cached and cached[0] + 30 > now:
+        return cached[1]
+    if not _LLM_AVAILABLE:
+        result = {"ok": False, "detail": "openai package is not installed"}
+    else:
+        try:
+            probe_client = AsyncOpenAI(api_key=LLM_API_KEY or "sk-local",
+                                       base_url=LLM_BASE_URL or None, timeout=8.0)
+            await probe_client.chat.completions.create(
+                model=LLM_MODEL,
+                messages=[{"role": "user", "content": "Reply with exactly: OK"}],
+                max_tokens=4,
+            )
+            result = {"ok": True, "detail": "AI model is reachable"}
+        except Exception as e:  # noqa: BLE001 - any failure means the model is offline
+            result = {"ok": False, "detail": str(e) or "model server is not reachable"}
+    _probe_cache["last"] = (now, result)
+    return result
+
+
 async def _chat_send(system_message, prompt, image_b64=None):
     if not _LLM_AVAILABLE:
         raise RuntimeError("openai package is not installed (pip install openai)")

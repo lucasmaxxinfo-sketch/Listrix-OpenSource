@@ -443,8 +443,13 @@ the inbox and replies stay approval-gated drafts.
     git repo initialized. Docs (BUILDER_BRIEF/HANDOVER/PROJECT_STATE/diary) updated to the free,
     open-source stack. Backend suite **88 passed / 3 skipped** (live-LLM POCs opt-in via
     `LISTRIX_RUN_LIVE_LLM_TESTS=1`); frontend production build clean.
-16. **Live end-to-end validation of TradeMe/Facebook/Gmail with real credentials; sales P&L
-    refinements (cost-of-goods per sale, marketplace payout reconciliation).**
+16. ✅ **Owner feedback round (Phase 26)** — Stocksix inventory connector (wizard + encrypted
+    creds + idempotent item sync via `GET /api/public/v1/inventory`), Integration Hub offline
+    fallback so the wizard is never "missing", `GET /api/ai/status` probe + AI-status banner +
+    real sidebar AI light, and the DJ-deck redesign (3D panels, glowing buttons, neon accents,
+    animated equalizer bars). Backend **92 passed / 3 skipped**; frontend production build clean.
+17. **Live end-to-end validation of TradeMe/Facebook/Gmail/Stocksix with real credentials; sales
+    P&L refinements (cost-of-goods per sale, marketplace payout reconciliation).**
 
 > Explicitly deferred: Authentication (design must not block future auth; lock down workspace routes once auth exists).
 > Integrations remain simulated but must be modular and production-ready.

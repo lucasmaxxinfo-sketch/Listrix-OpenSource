@@ -50,3 +50,16 @@ async def ai_assistant(payload: AssistantRequest, wid: str = Depends(get_wid), _
     finally:
         if payload.voice:
             await log_event(wid, EventType.VOICE_QUERY_PROCESSED, f"Voice query processed: {payload.query[:60]}", None)
+
+
+@router.get("/ai/status")
+async def ai_status(wid: str = Depends(get_wid)):
+    """Lightweight AI status for the UI banner (probe cached server-side ~30s)."""
+    probe = await llm.probe_llm()
+    return {
+        "reachable": probe["ok"],
+        "detail": probe["detail"],
+        "model": llm.LLM_MODEL,
+        "base_url": llm.LLM_BASE_URL,
+        "local": "localhost" in (llm.LLM_BASE_URL or "") or "127.0.0.1" in (llm.LLM_BASE_URL or ""),
+    }
