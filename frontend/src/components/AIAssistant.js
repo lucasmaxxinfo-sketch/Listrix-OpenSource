@@ -46,7 +46,7 @@ export const AIAssistant = () => {
       setMessages((m) => [...m, { role: "ai", text: res.answer, recs: res.recommendations || [] }]);
       if (isVoice) speak(res.answer);
     } catch {
-      setMessages((m) => [...m, { role: "ai", text: "Sorry, I couldn't process that right now.", recs: [] }]);
+      setMessages((m) => [...m, { role: "ai", text: "I can't reach the AI brain right now. Start Listrix on this computer (double-click the launcher), open the free Ollama app, and try again.", recs: [] }]);
     } finally {
       setLoading(false);
     }

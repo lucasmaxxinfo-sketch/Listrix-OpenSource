@@ -71,7 +71,11 @@ def fake_llm(monkeypatch):
             return dict(BRIEF_RESPONSE)
         raise AssertionError(f"Unexpected system message: {system_message[:100]!r}")
 
+    async def fake_probe():
+        return {"ok": True, "detail": "stubbed by tests"}
+
     monkeypatch.setattr(llm, "call_llm", fake_call_llm)
+    monkeypatch.setattr(llm, "probe_llm", fake_probe)
 
 
 def headers(wid):

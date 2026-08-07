@@ -147,6 +147,11 @@ async def call_llm(system_message, prompt, image_b64=None):
     if image_b64:
         # Vision payloads are large and one-shot: never cached.
         return extract_json(await _chat_send(system_message, prompt, image_b64))
+    # Fast offline check (cached ~30s): fail immediately instead of burning the full
+    # retry window when the local model server is not running, so callers can fall
+    # back to simulated intelligence without a long pause.
+    if not (await probe_llm()).get("ok"):
+        raise ConnectionError("AI model offline - start the local Ollama app")
     key = _cache_key(system_message, prompt)
     cached = _get_cached(key)
     if cached is not None:

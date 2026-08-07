@@ -14,6 +14,14 @@ def reset_cache():
     clear_llm_cache()
 
 
+@pytest.fixture(autouse=True)
+def llm_online(monkeypatch):
+    async def ok_probe():
+        return {"ok": True, "detail": "stubbed by tests"}
+
+    monkeypatch.setattr(llm, "probe_llm", ok_probe)
+
+
 def test_extract_json_plain():
     assert extract_json('{"a": 1}') == {"a": 1}
 
@@ -98,6 +106,23 @@ def test_call_llm_does_not_retry_json_decode_error(monkeypatch):
     with pytest.raises(json.JSONDecodeError):
         run(llm.call_llm("s", "p"))
     assert calls["n"] == 1
+
+
+def test_call_llm_fails_fast_when_model_offline(monkeypatch):
+    async def offline_probe():
+        return {"ok": False, "detail": "offline"}
+
+    calls = {"n": 0}
+
+    async def never_called(system_message, prompt, image_b64=None):
+        calls["n"] += 1
+        return '{"ok": true}'
+
+    monkeypatch.setattr(llm, "probe_llm", offline_probe)
+    monkeypatch.setattr(llm, "_chat_send", never_called)
+    with pytest.raises(ConnectionError):
+        run(llm.call_llm("s", "p"))
+    assert calls["n"] == 0
 
 
 def test_call_llm_caches_identical_text_prompt(monkeypatch):

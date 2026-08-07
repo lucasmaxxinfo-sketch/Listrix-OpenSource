@@ -87,6 +87,57 @@ async def gather_memory(wid, item, listing):
             "applied_types": list({a["type"] for a in applied}), "dismissed_types": list({d["type"] for d in dismissed})}
 
 
+def simulate_analysis(wid, item, listing, memory):
+    """Rule-based fallback when the local AI model is offline.
+
+    Keeps the AI agent areas usable (clearly labelled as simulated) instead of
+    failing with a connection error. Switches back to live analysis automatically
+    the moment Ollama is reachable again.
+    """
+    has_listing = listing is not None
+    cost = item.get("cost")
+    price = listing.get("suggested_price") if listing else None
+    hrs = memory.get("time_on_market_hours", 0)
+    if not has_listing:
+        status, likelihood, reason = "average", 55.0, "No listing yet - generate one to start gathering market data."
+    elif price is not None and cost is not None and price < cost * 1.1:
+        status, likelihood, reason = "poor", 35.0, "Price is close to (or below) cost, which usually stalls sales."
+    elif price is not None and cost is not None and price > cost * 2:
+        status, likelihood, reason = "good", 78.0, "Healthy margin vs cost with solid listing quality."
+    elif hrs > 720:
+        status, likelihood, reason = "poor", 42.0, "On market for a while - consider a price or title refresh."
+    else:
+        status, likelihood, reason = "average", 60.0, "Listed with reasonable fundamentals; watch early engagement."
+
+    suggestions = []
+    if not has_listing:
+        suggestions.append({
+            "type": "generate_listing", "title": "Generate a listing", "detail": "Create a marketplace listing for this item to start attracting buyers.",
+            "confidence": 90, "expected_impact": "Starts buyer interest", "expected_outcome": "Listing live with title, description and hashtags",
+            "risk_level": "low", "reason": "Items without listings cannot sell.", "params": {},
+        })
+    elif price is not None and cost is not None and price < cost * 1.25:
+        suggestions.append({
+            "type": "reduce_price", "title": "Reconsider the price", "detail": "Margin over cost is thin; check comparable listings before lowering.",
+            "confidence": 70, "expected_impact": "Faster sale", "expected_outcome": "Better buyer response",
+            "risk_level": "medium", "reason": "Thin margin can stall negotiations.", "params": {"new_price": round(float(cost) * 1.4, 2)},
+        })
+    if has_listing and hrs > 336:
+        suggestions.append({
+            "type": "relist", "title": "Refresh the listing", "detail": "Relist after time on market to regain visibility.",
+            "confidence": 68, "expected_impact": "Renewed visibility", "expected_outcome": "Fresh reach among buyers",
+            "risk_level": "low", "reason": "Stale listings lose rank.", "params": {},
+        })
+    if len(suggestions) < 2:
+        suggestions.append({
+            "type": "add_keywords", "title": "Add search keywords", "detail": "Add more hashtags so buyers searching similar items find this faster.",
+            "confidence": 62, "expected_impact": "More views", "expected_outcome": "Higher discovery in search",
+            "risk_level": "low", "reason": "Discovery drives engagement.", "params": {"add_hashtags": ["vintage", "collectible"]},
+        })
+    return {"status": status, "likelihood_of_sale": likelihood, "reason": reason,
+            "recommended_action": suggestions[0]["title"] if suggestions else "Monitor", "simulated": True}, suggestions
+
+
 async def analyze_one(wid, item):
     listing = await db.listings.find_one({"workspace_id": wid, "$or": [{"item_id": item["id"]}, {"source_name": item["name"]}]}, {"_id": 0}, sort=[("created_at", -1)])
     memory = await gather_memory(wid, item, listing)
@@ -100,7 +151,15 @@ async def analyze_one(wid, item):
     await log_event(wid, EventType.MARKET_SIGNAL_UPDATED, f"Market signal for {item['name']}: demand {ms['demand']}, {ms['price_trend']} trend", {"item_id": item["id"]})
     if lc:
         await log_event(wid, EventType.LISTING_VIEW_ESTIMATED, f"Estimated {lc['views']} views for {item['name']} ({lc['engagement']} engagement)", {"item_id": item["id"]})
-    data = await llm.call_llm(AGENT_SYSTEM, build_agent_prompt(mem, item, listing, memory))
+    simulated = False
+    try:
+        data = await llm.call_llm(AGENT_SYSTEM, build_agent_prompt(mem, item, listing, memory))
+    except Exception as e:
+        logger.warning("LLM offline for %s - using simulated analysis: %s", item["name"], e)
+        pr, fallback_suggestions = simulate_analysis(wid, item, listing, memory)
+        data = {"performance": pr, "suggestions": fallback_suggestions}
+        simulated = True
+        await log_event(wid, EventType.AI_ERROR, f"AI model offline - simulated analysis used for {item['name']}", {"item_id": item["id"], "simulated": True})
 
     pr = data.get("performance", {}) or {}
     status = str(pr.get("status", "average")).lower()
@@ -133,4 +192,4 @@ async def analyze_one(wid, item):
     if created:
         await log_event(wid, EventType.ACTION_QUEUED, f"{len(created)} action(s) queued for {item['name']}", {"item_id": item["id"], "count": len(created)})
     await log_event(wid, EventType.AI_SUGGESTION_CREATED, f"{len(created)} suggestion(s) generated for {item['name']}", {"item_id": item["id"]})
-    return {"performance": perf.model_dump(), "suggestions": created}
+    return {"performance": perf.model_dump(), "suggestions": created, "simulated": simulated}

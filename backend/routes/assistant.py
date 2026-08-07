@@ -43,10 +43,24 @@ async def ai_assistant(payload: AssistantRequest, wid: str = Depends(get_wid), _
             u = str(r.get("urgency", "medium")).lower()
             recs.append({"title": str(r.get("title", "")).strip(), "detail": str(r.get("detail", "")).strip(),
                          "urgency": u if u in ("low", "medium", "high") else "medium", "confidence": float(r.get("confidence", 60))})
-        return {"answer": str(data.get("answer", "")).strip(), "recommendations": recs}
+        return {"answer": str(data.get("answer", "")).strip(), "recommendations": recs, "simulated": False}
     except Exception as e:
-        logger.error(f"Assistant failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Assistant failed: {e}")
+        logger.warning("Assistant offline - returning simulated guidance: %s", e)
+        total = context.get("total_items", 0) if isinstance(context, dict) else 0
+        pending = context.get("pending_suggestions", 0) if isinstance(context, dict) else 0
+        tip = ("Your inventory has items waiting for attention - open AI Manager to review queued actions."
+               if pending else
+               "Run a marketing analysis from AI Manager to get pricing and listing recommendations for your inventory.")
+        return {
+            "answer": ("The AI brain isn't running on this computer yet, so I'm giving you a quick rule-of-thumb answer. "
+                       "Start the free Ollama app (ollama pull llama3.2-vision) and I'll switch to full live intelligence automatically. "
+                       f"Right now: {tip}"),
+            "recommendations": [
+                {"title": "Start the AI brain", "detail": "Open the Ollama app on this computer and install llama3.2-vision, then refresh.",
+                 "urgency": "high", "confidence": 95},
+            ],
+            "simulated": True,
+        }
     finally:
         if payload.voice:
             await log_event(wid, EventType.VOICE_QUERY_PROCESSED, f"Voice query processed: {payload.query[:60]}", None)
