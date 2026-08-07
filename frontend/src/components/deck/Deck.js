@@ -34,7 +34,7 @@ function wedgePath(a0, a1) {
  * Deck — the signature Terilliom interaction component.
  * Fixed diameter, rings, segments, glow, rotation, zoom, drag and click behaviour.
  */
-export const Deck = ({ compact = false }) => {
+export const Deck = ({ compact = false, size }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const activeModule = getActiveModule(location.pathname);
@@ -86,7 +86,7 @@ export const Deck = ({ compact = false }) => {
       onWheel={onWheel}
       className="lx-deck relative mx-auto select-none"
       style={{
-        width: "372px", // fixed Deck diameter (Terilliom Deck SDK)
+        width: size || "372px", // fixed Deck diameter (Terilliom Deck SDK); portrait phones scale it to fit
         aspectRatio: "1 / 1",
         minHeight: compact ? 240 : 300,
       }}

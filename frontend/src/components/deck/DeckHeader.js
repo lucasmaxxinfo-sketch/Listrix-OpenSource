@@ -7,7 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import DeckLogo from "@/components/DeckLogo";
 import { useNotifications, useMarkAllNotificationsRead } from "@/lib/queries";
 
-export const DeckHeader = () => {
+export const DeckHeader = ({ compact = false }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [q, setQ] = useState("");
@@ -44,16 +44,33 @@ export const DeckHeader = () => {
 
       {/* left: logo + app name */}
       <div className="flex min-w-0 items-center gap-2.5">
-        <button onClick={() => navigate("/dashboard")} className="flex items-center gap-2.5 lx-deck-touch" data-testid="header-logo">
-          <DeckLogo size={34} rainbow />
-          <span className="leading-tight">
-            <span className="block text-base font-black tracking-tight text-white lx-neon">Listrix</span>
-            <span className="block text-[9px] uppercase tracking-[0.3em] text-[hsl(var(--tp-text-secondary))]">Terilliom Deck</span>
-          </span>
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="flex items-center gap-2.5 lx-deck-touch"
+          data-testid="header-logo"
+          aria-label="Listrix home"
+        >
+          <DeckLogo size={compact ? 30 : 34} rainbow />
+          {!compact && (
+            <span className="leading-tight">
+              <span className="block text-base font-black tracking-tight text-white lx-neon">Listrix</span>
+              <span className="block text-[9px] uppercase tracking-[0.3em] text-[hsl(var(--tp-text-secondary))]">Terilliom Deck</span>
+            </span>
+          )}
         </button>
       </div>
 
       {/* center: search */}
+      {compact ? (
+        <button
+          data-testid="global-search"
+          onClick={() => navigate("/search")}
+          className="deck-ico lx-deck-touch flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[hsl(var(--tp-border))] text-[hsl(var(--tp-text-primary))] transition-all duration-150 hover:border-[#3ec8f2]/70 hover:shadow-[0_0_18px_rgba(62,200,242,0.28)]"
+          aria-label="Search"
+        >
+          <Search size={18} />
+        </button>
+      ) : (
       <form onSubmit={submitSearch} className="min-w-0 flex-1 max-w-md" data-testid="global-search">
         <div className="relative">
           <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[hsl(var(--tp-text-secondary))]" />
@@ -65,6 +82,7 @@ export const DeckHeader = () => {
           />
         </div>
       </form>
+      )}
 
       {/* right: actions */}
       <div className="flex items-center gap-1.5 md:gap-2">
@@ -75,7 +93,7 @@ export const DeckHeader = () => {
           aria-label="AI Assistant"
         >
           <Sparkles size={17} className="text-[#9a7bff]" />
-          <span className="inline">AI Assistant</span>
+          {!compact && <span className="inline">AI Assistant</span>}
         </button>
 
         <div className="relative" data-testid="notifications-bell">
@@ -121,13 +139,15 @@ export const DeckHeader = () => {
           )}
         </div>
 
-        <button
-          data-testid="header-new-item"
-          onClick={() => navigate("/workflows")}
-          className="deck-ico lx-deck-touch inline-flex h-11 items-center gap-2 rounded-xl bg-[#ffb648] px-4 text-sm font-bold text-black transition-all duration-150 hover:brightness-110"
-        >
-          <Plus size={17} /> New Item
-        </button>
+        {!compact && (
+          <button
+            data-testid="header-new-item"
+            onClick={() => navigate("/workflows")}
+            className="deck-ico lx-deck-touch inline-flex h-11 items-center gap-2 rounded-xl bg-[#ffb648] px-4 text-sm font-bold text-black transition-all duration-150 hover:brightness-110"
+          >
+            <Plus size={17} /> New Item
+          </button>
+        )}
 
         <div className="relative">
           {user ? (
@@ -139,8 +159,8 @@ export const DeckHeader = () => {
                 aria-label="User menu"
               >
                 <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#5ee08a]/20 text-xs font-black text-[#5ee08a]">{initials}</span>
-                <span className="block max-w-[140px] truncate text-xs text-[hsl(var(--tp-text-secondary))]">{user.name || user.email}</span>
-                <ChevronDown size={14} className="text-[hsl(var(--tp-text-secondary))]" />
+                {!compact && <span className="block max-w-[140px] truncate text-xs text-[hsl(var(--tp-text-secondary))]">{user.name || user.email}</span>}
+                {!compact && <ChevronDown size={14} className="text-[hsl(var(--tp-text-secondary))]" />}
               </button>
               {userOpen && (
                 <>

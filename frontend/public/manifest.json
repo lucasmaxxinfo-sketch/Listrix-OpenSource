@@ -1,11 +1,10 @@
 {
-  "name": "Listrix \u2014 Resale Business OS",
+  "name": "Listrix — Resale Business OS",
   "short_name": "Listrix",
   "description": "Business operating system for resellers: AI listings, pricing, financials, inbox and marketplace tools.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
-  "orientation": "landscape",
   "background_color": "#07050c",
   "theme_color": "#07050c",
   "icons": [

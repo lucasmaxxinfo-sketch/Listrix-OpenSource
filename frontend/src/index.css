@@ -468,9 +468,10 @@ code,
 
 /* ================= Fixed-canvas scaler =================
    The Terilliom Deck canvas is a fixed 1280x800 tablet layout.
-   DeckScaler scales it to fit any screen — phones see the full
-   tablet UI scaled down, never a broken or hidden layout. */
-.lx-scaler {
+   Landscape/tablet screens stretch it to fit; portrait phones switch
+   to the DeckPortrait split (buttons | wheel | live metrics). */
+.lx-scaler,
+.lx-portrait-host {
     background:
         radial-gradient(1000px 560px at 50% -12%, rgba(255, 182, 72, 0.07), transparent 60%),
         radial-gradient(760px 520px at 50% 116%, rgba(62, 200, 242, 0.05), transparent 60%),
@@ -478,44 +479,6 @@ code,
 }
 .lx-scaler-canvas {
     box-shadow: 0 0 90px rgba(255, 182, 72, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.04);
-}
-
-/* ================= Landscape hint pill =================
-   Portrait/small screens show a slim dismissible note; the app
-   itself is always visible thanks to the scaler. */
-.lx-rotate-pill {
-    position: fixed;
-    left: 50%;
-    bottom: 12px;
-    transform: translateX(-50%);
-    z-index: 999;
-    display: none;
-    align-items: center;
-    gap: 10px;
-    max-width: calc(100vw - 24px);
-    padding: 10px 12px;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 182, 72, 0.35);
-    background: rgba(10, 8, 14, 0.92);
-    box-shadow: 0 0 24px rgba(255, 182, 72, 0.16);
-    backdrop-filter: blur(8px);
-    color: #fff;
-    cursor: default;
-}
-@media (orientation: portrait) and (max-width: 900px) {
-    .lx-rotate-pill {
-        display: flex;
-    }
-    body {
-        overflow: hidden;
-    }
-}
-@keyframes lx-rotate-hint {
-    0%, 100% { transform: rotate(-90deg); }
-    50% { transform: rotate(0deg); }
-}
-.lx-rotate-hint {
-    animation: lx-rotate-hint 1.8s ease-in-out infinite;
 }
 
 /* ================= Deck content area ================= */

@@ -3,7 +3,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { useAIStatus } from "@/lib/queries";
 import { DOCK } from "./modules";
 
-export const DeckDock = () => {
+export const DeckDock = ({ compact = false }) => {
   const location = useLocation();
   const { data: ai } = useAIStatus();
   const aiOk = ai?.reachable === true;
@@ -17,7 +17,9 @@ export const DeckDock = () => {
   return (
     <footer
       data-testid="deck-dock"
-      className="relative z-20 flex h-[72px] shrink-0 items-center gap-3 border-t border-[hsl(var(--tp-border))] bg-[hsl(var(--tp-panel))]/90 px-5 backdrop-blur"
+      className={`relative z-20 flex shrink-0 items-center border-t border-[hsl(var(--tp-border))] bg-[hsl(var(--tp-panel))]/90 backdrop-blur ${
+        compact ? "h-[60px] gap-1 px-2" : "h-[72px] gap-3 px-5"
+      }`}
     >
       <span className="absolute inset-x-0 top-0 h-[2px] lx-rainbow-line opacity-70" aria-hidden="true" />
 
@@ -28,7 +30,9 @@ export const DeckDock = () => {
             key={to}
             to={to}
             data-testid={`dock-${label.toLowerCase().replace(/\s+/g, "-")}`}
-            className={`lx-deck-touch group relative flex h-[52px] flex-1 max-w-[130px] flex-col items-center justify-center gap-0.5 rounded-xl text-[10px] font-bold uppercase tracking-wide transition-all duration-150 ${
+            className={`lx-deck-touch group relative flex flex-1 flex-col items-center justify-center gap-0.5 rounded-xl font-bold uppercase tracking-wide transition-all duration-150 ${
+              compact ? "h-[48px] max-w-none text-[9px]" : "h-[52px] max-w-[130px] text-[10px]"
+            } ${
               active ? "text-white" : "text-[hsl(var(--tp-text-secondary))] hover:text-white"
             }`}
           >
@@ -48,15 +52,17 @@ export const DeckDock = () => {
       })}
 
       {/* status + clock */}
-      <div className="ml-auto flex shrink-0 items-center gap-3 pl-2">
-        <div className="flex items-center gap-2 rounded-full border border-[hsl(var(--tp-border))] bg-black/35 px-3 py-1.5">
-          <span className={`h-2 w-2 rounded-full ${aiOk ? "bg-[#5ee08a] shadow-[0_0_8px_#5ee08a]" : "bg-[#ffb648] shadow-[0_0_8px_#ffb648] lx-pulse-2s"}`} />
-          <span className="font-mono text-[10px] uppercase tracking-wider text-[hsl(var(--tp-text-secondary))]">{aiOk ? "AI online" : "AI offline"}</span>
+      {!compact && (
+        <div className="ml-auto flex shrink-0 items-center gap-3 pl-2">
+          <div className="flex items-center gap-2 rounded-full border border-[hsl(var(--tp-border))] bg-black/35 px-3 py-1.5">
+            <span className={`h-2 w-2 rounded-full ${aiOk ? "bg-[#5ee08a] shadow-[0_0_8px_#5ee08a]" : "bg-[#ffb648] shadow-[0_0_8px_#ffb648] lx-pulse-2s"}`} />
+            <span className="font-mono text-[10px] uppercase tracking-wider text-[hsl(var(--tp-text-secondary))]">{aiOk ? "AI online" : "AI offline"}</span>
+          </div>
+          <div className="rounded-full border border-[hsl(var(--tp-border))] bg-black/35 px-3 py-1.5 font-mono text-xs tabular-nums text-[hsl(var(--tp-text-primary))]">
+            {now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+          </div>
         </div>
-        <div className="rounded-full border border-[hsl(var(--tp-border))] bg-black/35 px-3 py-1.5 font-mono text-xs tabular-nums text-[hsl(var(--tp-text-primary))]">
-          {now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
-        </div>
-      </div>
+      )}
     </footer>
   );
 };

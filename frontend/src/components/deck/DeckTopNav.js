@@ -2,14 +2,16 @@ import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { MODULES, getActiveModule } from "./modules";
 
-export const DeckTopNav = () => {
+export const DeckTopNav = ({ compact = false }) => {
   const location = useLocation();
   const activeModule = getActiveModule(location.pathname);
 
   return (
     <nav
       data-testid="deck-topnav"
-      className="flex h-[76px] shrink-0 items-stretch justify-center gap-4 border-b border-[hsl(var(--tp-border))] bg-[hsl(var(--tp-panel))]/60 px-3"
+      className={`flex shrink-0 items-stretch border-b border-[hsl(var(--tp-border))] bg-[hsl(var(--tp-panel))]/60 ${
+        compact ? "h-[60px] gap-2 overflow-x-auto px-2 lx-scroll" : "h-[76px] justify-center gap-4 px-3"
+      }`}
       aria-label="Primary modules"
     >
       {MODULES.map(({ id, label, icon: Icon, to }) => {
@@ -19,7 +21,9 @@ export const DeckTopNav = () => {
             key={id}
             to={to}
             data-testid={`nav-${id}`}
-            className={`lx-deck-touch group relative flex min-w-[110px] flex-1 max-w-[220px] items-center justify-center gap-2.5 rounded-2xl px-4 text-sm font-bold uppercase tracking-wide transition-all duration-150 ${
+            className={`lx-deck-touch group relative flex items-center justify-center rounded-2xl font-bold uppercase tracking-wide transition-all duration-150 ${
+              compact ? "min-w-[88px] shrink-0 gap-1.5 px-2.5 text-[11px]" : "min-w-[110px] flex-1 max-w-[220px] gap-2.5 px-4 text-sm"
+            } ${
               active
                 ? "text-white"
                 : "text-[hsl(var(--tp-text-secondary))] hover:text-white"
@@ -36,8 +40,8 @@ export const DeckTopNav = () => {
               }`}
               aria-hidden="true"
             />
-            <Icon size={19} className={`relative transition-transform duration-150 group-hover:scale-110 ${active ? "drop-shadow-[0_0_8px_rgba(255,182,72,0.9)]" : ""}`} />
-            <span className="relative">{label}</span>
+            <Icon size={compact ? 17 : 19} className={`relative transition-transform duration-150 group-hover:scale-110 ${active ? "drop-shadow-[0_0_8px_rgba(255,182,72,0.9)]" : ""}`} />
+            <span className="relative whitespace-nowrap">{label}</span>
             <span
               className={`absolute bottom-1 left-1/2 h-[3px] w-8 -translate-x-1/2 rounded-full transition-all duration-150 ${
                 active ? "lx-rainbow-line opacity-100" : "opacity-0 group-hover:opacity-40"
