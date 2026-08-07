@@ -4,7 +4,7 @@ import React from "react";
  * DeckLogo — neon DJ-deck turntable mark for Listrix.
  * Pure SVG (no external assets) so it works offline and self-hosted.
  */
-export const DeckLogo = ({ size = 36, withWordmark = false, className = "" }) => (
+export const DeckLogo = ({ size = 36, withWordmark = false, rainbow = false, className = "" }) => (
   <span className={`inline-flex items-center gap-2.5 ${className}`}>
     <svg
       width={size}
@@ -16,6 +16,14 @@ export const DeckLogo = ({ size = 36, withWordmark = false, className = "" }) =>
       role="img"
     >
       <defs>
+        <linearGradient id="lxRainbowStroke" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#ff6a5e" />
+          <stop offset="0.2" stopColor="#ffb648" />
+          <stop offset="0.4" stopColor="#ffe14d" />
+          <stop offset="0.6" stopColor="#5ee08a" />
+          <stop offset="0.8" stopColor="#3ec8f2" />
+          <stop offset="1" stopColor="#ff6ec7" />
+        </linearGradient>
         <linearGradient id="lxPlate" x1="8" y1="6" x2="56" y2="60" gradientUnits="userSpaceOnUse">
           <stop offset="0" stopColor="#2a2016" />
           <stop offset="0.55" stopColor="#171008" />
@@ -47,7 +55,7 @@ export const DeckLogo = ({ size = 36, withWordmark = false, className = "" }) =>
       </defs>
 
       {/* deck plate */}
-      <rect x="2.5" y="2.5" width="59" height="59" rx="15" fill="url(#lxPlate)" stroke="rgba(255,190,110,0.4)" strokeWidth="1.4" />
+      <rect x="2.5" y="2.5" width="59" height="59" rx="15" fill="url(#lxPlate)" stroke={rainbow ? "url(#lxRainbowStroke)" : "rgba(255,190,110,0.4)"} strokeWidth="1.6" />
       <rect x="6" y="6" width="52" height="52" rx="12" fill="none" stroke="rgba(34,211,238,0.16)" strokeWidth="1" />
 
       {/* left deck (amber) */}

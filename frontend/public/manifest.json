@@ -1,15 +1,23 @@
 {
-  "name": "Listrix — Resale Business OS",
+  "name": "Listrix \u2014 Resale Business OS",
   "short_name": "Listrix",
   "description": "Business operating system for resellers: AI listings, pricing, financials, inbox and marketplace tools.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#0c0804",
-  "theme_color": "#0c0804",
+  "orientation": "landscape",
+  "background_color": "#07050c",
+  "theme_color": "#07050c",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }

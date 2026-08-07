@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import { AuthProvider } from "@/context/AuthContext";
 import { WorkspaceProvider, useWorkspace } from "@/context/WorkspaceContext";
 import AppShell from "@/components/layout/AppShell";
+import LandscapeGate from "@/components/deck/LandscapeGate";
 import AIAssistant from "@/components/AIAssistant";
 import Dashboard from "@/pages/Dashboard";
 import Items from "@/pages/Items";
@@ -59,6 +60,7 @@ function App() {
           </WorkspaceProvider>
         </AuthProvider>
         <Toaster position="top-right" theme="dark" richColors />
+        <LandscapeGate />
       </BrowserRouter>
     </div>
   );

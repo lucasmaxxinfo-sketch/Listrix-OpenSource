@@ -20,6 +20,12 @@ export const AIAssistant = () => {
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, loading]);
 
+  useEffect(() => {
+    const open = () => setOpen(true);
+    window.addEventListener("listrix:open-assistant", open);
+    return () => window.removeEventListener("listrix:open-assistant", open);
+  }, []);
+
   const speak = (text) => {
     try {
       if (window.speechSynthesis && text) {

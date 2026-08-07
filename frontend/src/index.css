@@ -311,3 +311,203 @@ code,
     border-radius: 2px;
     box-shadow: 0 0 10px rgba(255, 122, 26, 0.45);
 }
+
+/* ==========================================================================
+   Terilliom Deck SDK v1.0 — Listrix
+   The interface is fixed. Only the business function changes.
+   ========================================================================== */
+
+@layer base {
+    :root {
+        /* ---- Design tokens (never hardcode colours/spacing) ---- */
+        --tp-primary: 42 95% 55%;
+        --tp-primary-glow: rgba(255, 182, 72, 0.55);
+        --tp-background: 226 26% 4%;
+        --tp-panel: 224 18% 8%;
+        --tp-panel-2: 224 16% 11%;
+        --tp-border: 224 12% 18%;
+        --tp-text-primary: 210 22% 96%;
+        --tp-text-secondary: 215 12% 66%;
+        --tp-success: 148 65% 50%;
+        --tp-warning: 42 95% 55%;
+        --tp-danger: 0 75% 55%;
+        --tp-radius: 14px;
+        --tp-spacing: 8px;
+        --tp-shadow: 0 12px 34px rgba(0, 0, 0, 0.45);
+        --tp-animation: 300ms cubic-bezier(0.22, 1, 0.36, 1);
+
+        /* ---- Motion system (identical across every app) ---- */
+        --tp-motion-hover: 150ms;
+        --tp-motion-click: 100ms;
+        --tp-motion-expand: 300ms;
+        --tp-motion-rotate: 400ms;
+        --tp-motion-glow: 2s;
+        --tp-motion-panel: 250ms;
+
+        /* Listrix primary colour = Rainbow */
+        --tp-rainbow: conic-gradient(
+            from 0deg,
+            #ff6a5e, #ffb648, #ffe14d, #5ee08a,
+            #3ec8f2, #9a7bff, #ff6ec7, #ff6a5e
+        );
+    }
+
+    /* Touch: kill tap highlight + double-tap zoom, keep fast interactions */
+    html {
+        -webkit-tap-highlight-color: transparent;
+    }
+    body {
+        touch-action: manipulation;
+        overscroll-behavior: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+    main,
+    input,
+    textarea {
+        -webkit-user-select: auto;
+        user-select: auto;
+    }
+}
+
+@layer components {
+    /* ---- Deck touch targets: ≥44px, no double-tap zoom ---- */
+    .lx-deck-touch {
+        min-height: 44px;
+        min-width: 44px;
+        touch-action: manipulation;
+        cursor: pointer;
+    }
+
+    /* ---- Rainbow helpers (Listrix primary) ---- */
+    .lx-rainbow-line {
+        background-image: var(--tp-rainbow);
+    }
+    .lx-rainbow-bg {
+        background-image: var(--tp-rainbow);
+    }
+    .lx-rainbow-halo {
+        background: var(--tp-rainbow);
+        filter: blur(28px);
+        opacity: 0.34;
+        animation: lx-pulse-2s 2s ease-in-out infinite;
+    }
+
+    /* ---- Neon text ---- */
+    .lx-neon {
+        text-shadow:
+            0 0 8px rgba(255, 182, 72, 0.55),
+            0 0 22px rgba(154, 123, 255, 0.3),
+            0 1px 2px rgba(0, 0, 0, 0.6);
+    }
+
+    /* ---- 3D glowing buttons ---- */
+    .deck-ico {
+        background-image: linear-gradient(180deg, hsl(224 16% 13%), hsl(224 18% 8%));
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.06),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+            0 6px 18px rgba(0, 0, 0, 0.35);
+    }
+    .deck-ico:active {
+        transform: translateY(1px) scale(0.98);
+    }
+
+    /* ---- Deck rotating rings ---- */
+    .lx-ring-spin {
+        animation: lx-deck-spin 36s linear infinite;
+    }
+    .lx-ring-spin-rev {
+        animation: lx-deck-spin-rev 26s linear infinite;
+    }
+
+    /* Deck is a direct manipulation surface: drag + pinch-wheel only */
+    .lx-deck {
+        touch-action: none;
+        cursor: grab;
+    }
+    .lx-deck:active {
+        cursor: grabbing;
+    }
+
+    /* ---- Segment hover (click behaviour: 100ms) ---- */
+    .deck-seg {
+        transition: opacity 100ms ease, fill-opacity 100ms ease;
+    }
+    .deck-seg:hover path {
+        fill-opacity: 0.5;
+    }
+
+    /* ---- App panels share the same surface ---- */
+    [class~="bg-card"],
+    .deck-panel {
+        background-image: linear-gradient(180deg, hsl(224 16% 11%), hsl(224 18% 8%));
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.05),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+            0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+}
+
+/* ================= Keyframes (motion system) ================= */
+@keyframes lx-deck-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+@keyframes lx-deck-spin-rev {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+}
+@keyframes lx-pulse-2s {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
+}
+.lx-pulse-2s {
+    animation: lx-pulse-2s 2s ease-in-out infinite; /* Glow Pulse = 2s */
+}
+
+/* ================= Forced landscape gate =================
+   The Terilliom Deck layout is fixed landscape. Portrait touch
+   screens get a rotate prompt instead of a broken layout. */
+.lx-landscape-gate {
+    display: none;
+}
+@media (orientation: portrait) and (max-width: 900px) {
+    .lx-landscape-gate {
+        display: flex;
+    }
+    body {
+        overflow: hidden;
+    }
+}
+@keyframes lx-rotate-hint {
+    0%, 100% { transform: rotate(-90deg); }
+    50% { transform: rotate(0deg); }
+}
+.lx-rotate-hint {
+    animation: lx-rotate-hint 1.8s ease-in-out infinite;
+}
+
+/* ================= Deck content area ================= */
+.deck-content {
+    scrollbar-gutter: stable;
+}
+.deck-content > * {
+    animation: lx-panel-in 250ms cubic-bezier(0.22, 1, 0.36, 1) both; /* Panel Transition = 250ms */
+}
+@keyframes lx-panel-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 820px) {
+    .deck-app {
+        min-width: 780px; /* preserve the fixed landscape proportions */
+    }
+}
+
+/* Stage-black deck background (overrides the legacy radial body art) */
+body {
+    background-color: hsl(var(--tp-background));
+    background-image: none;
+}
