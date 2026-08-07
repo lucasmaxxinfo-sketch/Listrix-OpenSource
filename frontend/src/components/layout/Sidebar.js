@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { LayoutDashboard, Package, Workflow, Store, Cpu, BrainCircuit, Inbox, Plug, Settings, Wallet } from "lucide-react";
 import WorkspaceSwitcher from "@/components/WorkspaceSwitcher";
+import DeckLogo from "@/components/DeckLogo";
 import { useAIStatus } from "@/lib/queries";
 
 const NAV = [
@@ -21,9 +22,9 @@ export const Sidebar = () => {
   const aiOk = ai?.reachable === true;
   return (
   <aside data-testid="app-sidebar" className="hidden md:flex md:flex-col md:w-[260px] shrink-0 border-r border-border bg-card/60 lx-noise">
-    <div className="flex items-center gap-2.5 px-5 h-16 border-b border-border">
-      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-orangeGlow text-sm font-black">L</span>
-      <div className="leading-tight"><p className="text-sm font-bold tracking-tight">Listrix</p><p className="text-[10px] uppercase tracking-widest text-muted-foreground">Business OS</p></div>
+    <div className="deck-rail flex items-center gap-2.5 px-5 h-16 border-b border-border bg-[linear-gradient(180deg,rgba(255,122,26,0.06),transparent)]">
+      <DeckLogo size={34} />
+      <div className="leading-tight"><p className="neon-title text-sm font-black tracking-tight">Listrix</p><p className="text-[10px] uppercase tracking-widest text-muted-foreground">Business OS</p></div>
     </div>
     <WorkspaceSwitcher />
     <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto lx-scroll">

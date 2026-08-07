@@ -2,8 +2,9 @@ import { useState } from "react";
 import { LogIn, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLocation, useNavigate, NavLink } from "react-router-dom";
-import { Menu, X, Plus, Sparkles, Boxes, LayoutDashboard, Package, Workflow, Store, Cpu, Bell, Wallet, Search, CheckCheck } from "lucide-react";
+import { Menu, X, Plus, Sparkles, LayoutDashboard, Package, Workflow, Store, Cpu, Bell, Wallet, Search, CheckCheck } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar";
+import DeckLogo from "@/components/DeckLogo";
 import AIStatusBanner from "@/components/AIStatusBanner";
 import { useNotifications, useMarkAllNotificationsRead } from "@/lib/queries";
 
@@ -59,8 +60,8 @@ export const AppShell = ({ children }) => {
           <div className="absolute left-0 top-0 h-full w-[260px] bg-card border-r border-border p-4">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground"><Boxes size={16} /></span>
-                <span className="font-bold">Listrix</span>
+                <DeckLogo size={28} />
+                <span className="font-black tracking-tight">Listrix</span>
               </div>
               <button onClick={() => setMobileOpen(false)} className="text-muted-foreground"><X size={20} /></button>
             </div>

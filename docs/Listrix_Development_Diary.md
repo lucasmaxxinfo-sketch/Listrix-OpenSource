@@ -30,6 +30,36 @@
 ---
 
 ## Timeline (newest first)
+### Session — DJ-deck design matched to owner's reference images
+**What changed**
+- Owner shared the actual design screenshots (`design-refs/CLAW/` — ListrixDeck, ListrixScreen,
+  Listrixlogo) via Google Drive. Color extraction confirmed the language: warm stage-black
+  (`#080602`/`#0e0801`), neon amber/gold (`#60451c` family) + cyan/magenta glow accents, turntable
+  decks with concentric glowing rings and equalizer bars.
+- **Turntable logo:** new pure-SVG `frontend/src/components/DeckLogo.js` (two decks, glowing amber +
+  cyan rings, mixer rail + EQ). Wired into the sidebar header, mobile drawer, and login screen;
+  brand-new `public/deck-logo.svg` favicon plus generated `icon-192.png`/`icon-512.png` PWA icons
+  (all self-hosted, no external assets).
+- **Deck stage sign-in:** `frontend/src/components/DeckStage.js` — animated spinning vinyl with
+  groove rings, amber halo, glowing spindle, and live equalizer bar strip; login card got the DJ
+  mixer-rail neon top edge.
+- **Stage black + glows:** body background now uses a warm stage-black base with amber/cyan/magenta
+  radial lighting; new `.lx-vinyl` spin keyframes, `.lx-grooves` vinyl texture, `.eq-bar`,
+  `.deck-rail` mixer edge, and `.neon-underline` utilities in `frontend/src/index.css`.
+- Manifest/index meta updated to the warm black `#0c0804` with real app icons.
+
+**Why**
+- Owner feedback: the UI "is not the DJ deck design and is lacking in 3D feel with glowing buttons"
+  — this round matches the app to the exact reference artwork they provided.
+
+**Impact**
+- Frontend strict build (`CI=true yarn build`) clean; backend suite still **92 passed / 3 skipped**.
+- Demo still fully free: no fonts/CDN, no paid services; icons and logo are generated locally.
+
+**Follow-ups (not yet done)**
+- Live Stocksix sync once the owner's computer (Docker + Ollama + launcher) is set up.
+- Confirm the new login/sidebar look on the phone and fine-tune glow intensity if requested.
+
 ### Session — Command Center polish (Dashboard chart + inventory table)
 **What changed**
 - **Activity Overview chart:** a large full-width area chart now sits directly under the KPI row,

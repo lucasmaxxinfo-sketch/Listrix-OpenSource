@@ -27,9 +27,10 @@ body {
     -moz-osx-font-smoothing: grayscale;
     background-color: hsl(var(--background));
     background-image:
-        radial-gradient(1100px 560px at 72% -10%, rgba(255, 122, 26, 0.08), transparent 60%),
-        radial-gradient(900px 520px at -10% 110%, rgba(34, 211, 238, 0.07), transparent 60%),
-        radial-gradient(800px 520px at 110% 45%, rgba(217, 70, 239, 0.05), transparent 60%);
+        radial-gradient(1200px 620px at 70% -12%, rgba(255, 122, 26, 0.10), transparent 62%),
+        radial-gradient(1000px 560px at -12% 112%, rgba(34, 211, 238, 0.08), transparent 62%),
+        radial-gradient(900px 560px at 112% 42%, rgba(217, 70, 239, 0.06), transparent 60%),
+        radial-gradient(1600px 900px at 50% 120%, rgba(255, 122, 26, 0.05), transparent 70%);
     background-attachment: fixed;
 }
 
@@ -264,4 +265,49 @@ code,
 }
 .lx-scroll::-webkit-scrollbar-track {
     background: transparent;
+}
+
+
+/* ================= deck stage (vinyl + eq) ================= */
+.lx-vinyl {
+    animation: lx-spin 9s linear infinite;
+}
+.lx-grooves {
+    background-image: repeating-radial-gradient(
+        circle at center,
+        rgba(255, 255, 255, 0.05) 0 1px,
+        rgba(0, 0, 0, 0.85) 1px 3px
+    );
+    mix-blend-mode: screen;
+}
+@keyframes lx-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.eq-bar {
+    display: block;
+    width: 3px;
+    height: 12px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #22d3ee, #ff7a1a);
+    box-shadow: 0 0 8px rgba(34, 211, 238, 0.8);
+    animation: lx-eq 0.9s ease-in-out infinite;
+}
+
+/* DJ mixer rail — thin neon top edge for panels/cards */
+.deck-rail {
+    position: relative;
+    border-top: 1px solid rgba(34, 211, 238, 0.35);
+    box-shadow:
+        inset 0 1px 0 rgba(34, 211, 238, 0.12),
+        0 -10px 30px -22px rgba(34, 211, 238, 0.4);
+}
+
+/* soft neon underline for section titles (deck style) */
+.neon-underline {
+    background-image: linear-gradient(90deg, rgba(255, 122, 26, 0.9), rgba(34, 211, 238, 0.7), transparent);
+    height: 2px;
+    border-radius: 2px;
+    box-shadow: 0 0 10px rgba(255, 122, 26, 0.45);
 }
