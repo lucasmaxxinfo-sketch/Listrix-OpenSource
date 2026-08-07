@@ -7,7 +7,18 @@ import {
 import { api } from "@/lib/api";
 import { formatTime } from "@/lib/derive";
 
-const KIND_ICON = { marketplace: Store, communication: Mail, data: LineChart };
+const KIND_ICON = { marketplace: Store, communication: Mail, data: LineChart, inventory: Boxes };
+
+// Shown when the backend is unreachable (e.g. the free GitHub Pages demo shell) so the
+// Connection Wizard is never invisible — cards render in an explicit offline state.
+const FALLBACK_ROWS = [
+  { platform: "Stocksix", kind: "inventory", auth_status: "disconnected", permissions: ["read_inventory", "sync_items"], sync_enabled: false, mode: "offline", note: "Backend offline — start Listrix on your computer to connect." },
+  { platform: "TradeMe", kind: "marketplace", auth_status: "disconnected", permissions: ["read_listings", "create_listing_draft"], sync_enabled: false, mode: "offline" },
+  { platform: "Facebook Marketplace", kind: "marketplace", auth_status: "disconnected", permissions: ["read_listings"], sync_enabled: false, mode: "offline" },
+  { platform: "Gmail", kind: "communication", auth_status: "disconnected", permissions: ["read_messages"], sync_enabled: false, mode: "offline" },
+  { platform: "Pricing Signals", kind: "data", auth_status: "disconnected", permissions: ["read_market_prices"], sync_enabled: false, mode: "offline" },
+  { platform: "Competitor Listings", kind: "data", auth_status: "disconnected", permissions: ["read_competitors"], sync_enabled: false, mode: "offline" },
+];
 const PLATFORM_ICON = { "Stocksix": Boxes, "TradeMe": Store, "Facebook Marketplace": Store, "Gmail": Mail, "Pricing Signals": LineChart, "Competitor Listings": Users };
 
 // Platforms with a real live adapter get the full wizard; the rest keep the legacy toggle.
@@ -88,15 +99,6 @@ export default function IntegrationHub() {
   const [testing, setTesting] = useState(false);
   const [saving, setSaving] = useState(false);
   const [testResult, setTestResult] = useState(null);
-
-  const FALLBACK_ROWS = [
-    { platform: "Stocksix", kind: "inventory", auth_status: "disconnected", permissions: ["read_inventory", "sync_items"], sync_enabled: false, mode: "offline", note: "Backend offline — start Listrix on your computer to connect." },
-    { platform: "TradeMe", kind: "marketplace", auth_status: "disconnected", permissions: ["read_listings", "create_listing_draft"], sync_enabled: false, mode: "offline" },
-    { platform: "Facebook Marketplace", kind: "marketplace", auth_status: "disconnected", permissions: ["read_listings"], sync_enabled: false, mode: "offline" },
-    { platform: "Gmail", kind: "communication", auth_status: "disconnected", permissions: ["read_messages"], sync_enabled: false, mode: "offline" },
-    { platform: "Pricing Signals", kind: "data", auth_status: "disconnected", permissions: ["read_market_prices"], sync_enabled: false, mode: "offline" },
-    { platform: "Competitor Listings", kind: "data", auth_status: "disconnected", permissions: ["read_competitors"], sync_enabled: false, mode: "offline" },
-  ];
 
   const load = useCallback(async () => {
     setLoading(true);
