@@ -1,12 +1,26 @@
-════════════════════════════════════════════════════════════════
+════════════════════════════════════════════════════════════
   LISTRIX — HOW TO OPEN YOUR APP (no tech skills needed)
-════════════════════════════════════════════════════════════════
+════════════════════════════════════════════════════════════
 
 WHAT THIS IS
   Listrix is your reseller business app. It lives on YOUR computer.
   Nothing is sent to paid companies. Free and private.
 
+───────────────
+GET THE NEWEST VERSION (do this first)
+───────────────
+  If you were given this guide before, download the newest copy
+  so you get the latest fixes:
+
+  Option A (easiest):  Ask me to send you the latest Listrix_latest.zip.
+  Option B:            On GitHub, open the green "Code" button on the
+                       Listrix-OpenSource page and choose "Download ZIP".
+
+  Unzip it, then follow the steps below.
+
+───────────────
 WHAT YOU NEED ON YOUR COMPUTER (one-time, free)
+───────────────
   1. Docker (free)  — from https://www.docker.com/products/docker-desktop
      This runs the app for you. Install it, open it once, leave it running.
   2. Ollama (free)  — from https://ollama.com/download
@@ -38,8 +52,21 @@ WHERE YOUR DATA LIVES
   Inside a hidden folder created by Docker. It stays on your computer.
   To back it up later, just tell me and I'll write you a one-click backup.
 
-TROUBLE? 
-  Tell me exactly what you see (or a photo of the screen) and I'll fix it.
+TROUBLE? THE FIRST TIME THE APP IS STARTED IT BUILDS ITSELF.
+  That first build takes a few minutes and needs some free memory.
+  If you see a red error and the app does not open:
+    Windows:
+      1. Close other programs (builds need memory).
+      2. Open the Docker Desktop app (the whale icon).
+      3. Click Settings  -  Resources.
+      4. Set Memory to at least 4096 MB (4 GB).
+      5. Click Apply & Restart, wait for Docker to be ready.
+      6. Double-click START-LISTRIX.bat again.
+    Mac:
+      Same steps — Docker Desktop  -  Settings  -  Resources,
+      set Memory to at least 4 GB, then start again.
+  Still failing? Take a photo of the error window and send it to me.
+  I will fix it. Never worry about understanding the error text.
 
 ────────────────────────────────────────────────────────────────
   You don't need to understand any of the above. It's for whoever
