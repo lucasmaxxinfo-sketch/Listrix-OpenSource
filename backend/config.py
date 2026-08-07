@@ -37,6 +37,10 @@ LLM_CACHE_MAX_ENTRIES = int(os.environ.get("LLM_CACHE_MAX_ENTRIES", "256"))
 # behavior (silent fallback) while auth endpoints/ownership are fully functional;
 # set AUTH_REQUIRED=true to lock every /api route behind a JWT.
 AUTH_REQUIRED = os.environ.get("AUTH_REQUIRED", "false").lower() in ("1", "true", "yes")
+
+# Legal — consent version stamp recorded on every new account (see routes/auth.py).
+TERMS_VERSION = "2026-08-07"
+
 JWT_ALGORITHM = "HS256"
 JWT_SECRET = os.environ.get("JWT_SECRET", "")
 JWT_TTL_SECONDS = int(os.environ.get("JWT_TTL_SECONDS", "86400"))
@@ -95,6 +99,20 @@ FACEBOOK_PAGE_ID = os.environ.get("FACEBOOK_PAGE_ID", "")
 # GMAIL_ACCESS_TOKEN to pull buyer messages into the inbox (read-only).
 GMAIL_ACCESS_TOKEN = os.environ.get("GMAIL_ACCESS_TOKEN", "")
 
+# eBay — free developer program (developer.ebay.com). Client ID + refresh token
+# unlock live listing anchors; without them the connector runs on simulated data.
+EBAY_CLIENT_ID = os.environ.get("EBAY_CLIENT_ID", "")
+EBAY_CLIENT_SECRET = os.environ.get("EBAY_CLIENT_SECRET", "")
+EBAY_REFRESH_TOKEN = os.environ.get("EBAY_REFRESH_TOKEN", "")
+
+# govcr.online — compliance/government portal credentials (encrypted at rest).
+GOVCR_EMAIL = os.environ.get("GOVCR_EMAIL", "")
+GOVCR_PASSWORD = os.environ.get("GOVCR_PASSWORD", "")
+
+# TYTN POS — point-of-sale link (base URL + API key, local-first like Stocksix).
+TYTN_POS_BASE_URL = os.environ.get("TYTN_POS_BASE_URL", "")
+TYTN_POS_API_KEY = os.environ.get("TYTN_POS_API_KEY", "")
+
 # Real Stocksix connector (services/integrations/stocksix.py). The owner's Stocksix
 # hub is a local-first open-source inventory app with a public bearer-key API:
 #   GET {STOCKSIX_BASE_URL}/api/public/v1/inventory
@@ -122,4 +140,7 @@ DEFAULT_CONNECTORS = [
     {"platform": "Gmail", "kind": "communication", "auth_status": "disconnected", "permissions": ["read_messages"], "sync_enabled": False},
     {"platform": "Pricing Signals", "kind": "data", "auth_status": "disconnected", "permissions": ["read_market_prices"], "sync_enabled": False},
     {"platform": "Competitor Listings", "kind": "data", "auth_status": "disconnected", "permissions": ["read_competitors"], "sync_enabled": False},
+    {"platform": "eBay", "kind": "marketplace", "auth_status": "disconnected", "permissions": ["read_listings", "create_listing_draft"], "sync_enabled": False},
+    {"platform": "govcr.online", "kind": "compliance", "auth_status": "disconnected", "permissions": ["read_compliance_records"], "sync_enabled": False},
+    {"platform": "TYTN POS", "kind": "pos", "auth_status": "disconnected", "permissions": ["read_sales", "read_orders"], "sync_enabled": False},
 ]

@@ -28,6 +28,19 @@ PLATFORM_CRED_FIELDS = {
     "Gmail": {
         "access_token": "Gmail Access Token",
     },
+    "eBay": {
+        "client_id": "eBay App ID (Client ID)",
+        "client_secret": "Client Secret",
+        "refresh_token": "Refresh Token (optional)",
+    },
+    "govcr.online": {
+        "email": "govcr.online email",
+        "password": "govcr.online password",
+    },
+    "TYTN POS": {
+        "base_url": "POS address (URL)",
+        "api_key": "API Key",
+    },
 }
 
 def _env_creds(platform: str) -> dict:
@@ -42,6 +55,13 @@ def _env_creds(platform: str) -> dict:
         return {"page_token": config.FACEBOOK_PAGE_TOKEN, "page_id": config.FACEBOOK_PAGE_ID}
     if platform == "Gmail":
         return {"access_token": config.GMAIL_ACCESS_TOKEN}
+    if platform == "eBay":
+        return {"client_id": config.EBAY_CLIENT_ID, "client_secret": config.EBAY_CLIENT_SECRET,
+                "refresh_token": config.EBAY_REFRESH_TOKEN}
+    if platform == "govcr.online":
+        return {"email": config.GOVCR_EMAIL, "password": config.GOVCR_PASSWORD}
+    if platform == "TYTN POS":
+        return {"base_url": config.TYTN_POS_BASE_URL, "api_key": config.TYTN_POS_API_KEY}
     return {}
 
 

@@ -12,12 +12,16 @@ class User(BaseModel):
     password_hash: str
     name: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    accepted_terms: bool = False
+    accepted_terms_at: Optional[datetime] = None
+    accepted_terms_version: Optional[str] = None
 
 
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
     name: Optional[str] = None
+    accepted_terms: bool = False
 
     @field_validator("password")
     @classmethod
@@ -25,6 +29,7 @@ class UserCreate(BaseModel):
         if not v or len(str(v)) < 8:
             raise ValueError("Password must be at least 8 characters")
         return v
+
 
 
 class LoginRequest(BaseModel):
@@ -38,6 +43,9 @@ class UserOut(BaseModel):
     email: EmailStr
     name: Optional[str] = None
     created_at: datetime
+    accepted_terms: bool = False
+    accepted_terms_at: Optional[datetime] = None
+    accepted_terms_version: Optional[str] = None
 
 
 class TokenResponse(BaseModel):

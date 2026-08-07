@@ -31,7 +31,7 @@ def fake_llm(monkeypatch):
 
 
 def register(client, email, password="password123", name=None):
-    r = client.post("/api/auth/register", json={"email": email, "password": password, "name": name})
+    r = client.post("/api/auth/register", json={"email": email, "password": password, "name": name, "accepted_terms": True})
     assert r.status_code == 200, r.text
     return r.json()
 
@@ -56,18 +56,32 @@ def test_register_creates_owned_default_workspace_with_connectors(client):
     assert len(mine) >= 1
     assert any(w["is_default"] for w in mine)
     conns = client.get("/api/integrations", headers={**auth(data["access_token"]), "X-Workspace-Id": mine[0]["id"]}).json()
-    assert len(conns) == 6
+    assert len(conns) == 9
 
 
 def test_duplicate_email_rejected(client):
     register(client, "dup@example.com")
-    r = client.post("/api/auth/register", json={"email": "dup@example.com", "password": "password123"})
+    r = client.post("/api/auth/register", json={"email": "dup@example.com", "password": "password123", "accepted_terms": True})
     assert r.status_code == 400
 
 
 def test_short_password_rejected(client):
     r = client.post("/api/auth/register", json={"email": "short@example.com", "password": "short"})
     assert r.status_code == 422
+
+
+def test_register_requires_consent(client):
+    # No consent checkbox -> account cannot be created (400 from the auth route).
+    r = client.post("/api/auth/register", json={"email": "noconsent@example.com", "password": "password123"})
+    assert r.status_code == 400
+    r = client.post("/api/auth/register", json={"email": "noconsent@example.com", "password": "password123", "accepted_terms": False})
+    assert r.status_code == 400
+    # Consent given -> account created and consent record stored.
+    data = register(client, "consent@example.com")
+    me = client.get("/api/auth/me", headers=auth(data["access_token"])).json()
+    assert me["accepted_terms"] is True
+    assert me["accepted_terms_at"]
+    assert me["accepted_terms_version"]
 
 
 def test_login_success_and_wrong_password(client):

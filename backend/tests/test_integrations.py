@@ -55,7 +55,10 @@ def seed_connector_docs(client, wid):
 def test_connectors_seeded_and_tokens_never_exposed(client):
     wid = make_workspace(client)
     conns = client.get("/api/integrations", headers=headers(wid)).json()
-    assert {c["platform"] for c in conns} == {"Stocksix", "TradeMe", "Facebook Marketplace", "Gmail", "Pricing Signals", "Competitor Listings"}
+    assert {c["platform"] for c in conns} == {
+        "Stocksix", "TradeMe", "Facebook Marketplace", "Gmail",
+        "Pricing Signals", "Competitor Listings", "eBay", "govcr.online", "TYTN POS",
+    }
     assert all("tokens" not in c and "config" not in c for c in conns)
 
 
@@ -389,8 +392,8 @@ def test_gmail_refresh_merges_real_messages_when_connected(client, gmail_configu
 
 # ---- multi-user roles / members (staged) -------------------------------------------
 def test_member_invite_roles_and_owner_guard(client):
-    owner = client.post("/api/auth/register", json={"email": "ws-owner@example.com", "password": "password123", "name": "Owner"}).json()
-    member = client.post("/api/auth/register", json={"email": "ws-member@example.com", "password": "password123", "name": "Member"}).json()
+    owner = client.post("/api/auth/register", json={"email": "ws-owner@example.com", "password": "password123", "name": "Owner", "accepted_terms": True}).json()
+    member = client.post("/api/auth/register", json={"email": "ws-member@example.com", "password": "password123", "name": "Member", "accepted_terms": True}).json()
     oa = {"Authorization": f"Bearer {owner['access_token']}"}
     ma = {"Authorization": f"Bearer {member['access_token']}"}
 
@@ -407,7 +410,7 @@ def test_member_invite_roles_and_owner_guard(client):
     assert client.post(f"/api/workspaces/{wid}/members", headers=ma, json={"email": "x@y.com"}).status_code == 403
 
     # non-member third user cannot even view members
-    third = client.post("/api/auth/register", json={"email": "ws-third@example.com", "password": "password123"}).json()
+    third = client.post("/api/auth/register", json={"email": "ws-third@example.com", "password": "password123", "accepted_terms": True}).json()
     assert client.get(f"/api/workspaces/{wid}/members", headers={"Authorization": f"Bearer {third['access_token']}"}).status_code == 403
 
     # owner removes member
@@ -521,3 +524,33 @@ def test_wizard_rejects_credentials_for_simulated_platforms(client):
     assert client.post("/api/integrations/Pricing Signals/config", headers=headers(wid),
                        json={"credentials": {"anything": "x"}}).status_code == 404
     assert client.post("/api/integrations/Pricing Signals/test", headers=headers(wid)).status_code == 404
+
+
+# ---- eBay / govcr.online / TYTN POS wizard connectors ---------------------------
+def test_new_wizard_connectors_register_and_connect(client):
+    wid = make_workspace(client)
+    for platform, creds in [
+        ("eBay", {"client_id": "cid", "client_secret": "csec"}),
+        ("govcr.online", {"email": "me@example.com", "password": "secret-pass"}),
+        ("TYTN POS", {"base_url": "http://localhost:4000", "api_key": "pos-key"}),
+    ]:
+        assert get_adapter(platform) is not None
+        # credentials save encrypted + marked configured
+        r = client.post(f"/api/integrations/{platform}/config", headers=headers(wid), json={"credentials": creds})
+        assert r.status_code == 200, r.text
+        assert r.json()["configured"] is True
+        # connect flips to connected
+        r = client.post(f"/api/integrations/{platform}/connect", headers=headers(wid))
+        assert r.status_code == 200, r.text
+        assert r.json()["auth_status"] == "connected"
+        # sync runs and queues approval-gated suggestions (never mutates listings)
+        r = client.post(f"/api/integrations/{platform}/sync", headers=headers(wid))
+        assert r.status_code == 200, r.text
+        assert r.json()["simulated"] is True
+        # tokens are never exposed back to the client
+        row = client.get("/api/integrations", headers=headers(wid)).json()
+        card = next(c for c in row if c["platform"] == platform)
+        assert "tokens" not in card and "setup" not in card and "config" not in card
+        # disconnect clears credentials
+        r = client.post(f"/api/integrations/{platform}/disconnect", headers=headers(wid))
+        assert r.json()["auth_status"] == "disconnected"

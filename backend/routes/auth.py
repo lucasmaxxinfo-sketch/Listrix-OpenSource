@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException
 
 import config
@@ -11,7 +13,15 @@ router = APIRouter()
 
 
 def _user_out(user: dict) -> UserOut:
-    return UserOut(id=user["id"], email=user["email"], name=user.get("name"), created_at=parse_iso(user.get("created_at")))
+    return UserOut(
+        id=user["id"],
+        email=user["email"],
+        name=user.get("name"),
+        created_at=parse_iso(user.get("created_at")),
+        accepted_terms=bool(user.get("accepted_terms", False)),
+        accepted_terms_at=parse_iso(user.get("accepted_terms_at")) if user.get("accepted_terms_at") else None,
+        accepted_terms_version=user.get("accepted_terms_version"),
+    )
 
 
 @router.post("/auth/register", response_model=TokenResponse)
@@ -20,7 +30,17 @@ async def register(payload: UserCreate):
     exists = await db.users.find_one({"email": email}, {"_id": 0, "id": 1})
     if exists:
         raise HTTPException(status_code=400, detail="Email already registered")
-    user = User(email=email, password_hash=hash_password(payload.password), name=payload.name)
+    if not payload.accepted_terms:
+        raise HTTPException(status_code=400, detail="You must accept the Terms and Privacy Policy to create an account")
+    now = datetime.now(timezone.utc)
+    user = User(
+        email=email,
+        password_hash=hash_password(payload.password),
+        name=payload.name,
+        accepted_terms=True,
+        accepted_terms_at=now,
+        accepted_terms_version=config.TERMS_VERSION,
+    )
     doc = user.model_dump()
     doc["created_at"] = doc["created_at"].isoformat()
     await db.users.insert_one({**doc})
@@ -33,6 +53,12 @@ async def register(payload: UserCreate):
         await db.integrations.insert_one({**c, "workspace_id": ws.id, "last_sync": None})
     await log_event(ws.id, EventType.WORKSPACE_CREATED, f"Workspace created: {ws.name}", {"workspace": ws.name, "owner": user.id})
     await log_event(ws.id, EventType.AUTH_USER_REGISTERED, f"User registered: {email}", {"user_id": user.id})
+    await log_event(
+        ws.id,
+        EventType.USER_CONSENT,
+        f"User accepted Terms & Privacy v{config.TERMS_VERSION}: {email}",
+        {"user_id": user.id, "terms_version": config.TERMS_VERSION, "accepted_at": now.isoformat()},
+    )
     return TokenResponse(access_token=create_token(user.id), user=_user_out(doc))
 
 

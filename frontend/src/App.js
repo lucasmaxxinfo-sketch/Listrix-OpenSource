@@ -7,6 +7,9 @@ import AppShell from "@/components/layout/AppShell";
 import LandscapeGate from "@/components/deck/LandscapeGate";
 import DeckScaler from "@/components/deck/DeckScaler";
 import AIAssistant from "@/components/AIAssistant";
+import OnboardingWizard from "@/components/OnboardingWizard";
+import Terms from "@/pages/Terms";
+import Privacy from "@/pages/Privacy";
 import Dashboard from "@/pages/Dashboard";
 import Items from "@/pages/Items";
 import ItemDetail from "@/pages/ItemDetail";
@@ -57,9 +60,19 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <WorkspaceProvider>
-            <DeckScaler>
-              <Shell />
-            </DeckScaler>
+            <Routes>
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route
+                path="/*"
+                element={
+                  <DeckScaler>
+                    <Shell />
+                  </DeckScaler>
+                }
+              />
+            </Routes>
+            <OnboardingWizard />
           </WorkspaceProvider>
         </AuthProvider>
         <Toaster position="top-right" theme="dark" richColors />

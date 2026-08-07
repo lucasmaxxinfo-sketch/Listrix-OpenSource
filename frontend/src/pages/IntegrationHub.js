@@ -2,12 +2,12 @@ import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
 import {
   Loader2, Plug, RefreshCw, Store, Mail, LineChart, Users, Check, X,
-  ExternalLink, KeyRound, ShieldCheck, AlertTriangle, Lock, Boxes,
+  ExternalLink, KeyRound, ShieldCheck, AlertTriangle, Lock, Boxes, ShoppingCart,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { formatTime } from "@/lib/derive";
 
-const KIND_ICON = { marketplace: Store, communication: Mail, data: LineChart, inventory: Boxes };
+const KIND_ICON = { marketplace: Store, communication: Mail, data: LineChart, inventory: Boxes, pos: ShoppingCart, compliance: ShieldCheck };
 
 // Shown when the backend is unreachable (e.g. the free GitHub Pages demo shell) so the
 // Connection Wizard is never invisible — cards render in an explicit offline state.
@@ -18,14 +18,17 @@ const FALLBACK_ROWS = [
   { platform: "Gmail", kind: "communication", auth_status: "disconnected", permissions: ["read_messages"], sync_enabled: false, mode: "offline" },
   { platform: "Pricing Signals", kind: "data", auth_status: "disconnected", permissions: ["read_market_prices"], sync_enabled: false, mode: "offline" },
   { platform: "Competitor Listings", kind: "data", auth_status: "disconnected", permissions: ["read_competitors"], sync_enabled: false, mode: "offline" },
+  { platform: "eBay", kind: "marketplace", auth_status: "disconnected", permissions: ["read_listings", "create_listing_draft"], sync_enabled: false, mode: "offline" },
+  { platform: "govcr.online", kind: "compliance", auth_status: "disconnected", permissions: ["read_compliance_records"], sync_enabled: false, mode: "offline" },
+  { platform: "TYTN POS", kind: "pos", auth_status: "disconnected", permissions: ["read_sales", "read_orders"], sync_enabled: false, mode: "offline" },
 ];
-const PLATFORM_ICON = { "Stocksix": Boxes, "TradeMe": Store, "Facebook Marketplace": Store, "Gmail": Mail, "Pricing Signals": LineChart, "Competitor Listings": Users };
+const PLATFORM_ICON = { "Stocksix": Boxes, "TradeMe": Store, "Facebook Marketplace": Store, "Gmail": Mail, "Pricing Signals": LineChart, "Competitor Listings": Users, "eBay": Store, "govcr.online": ShieldCheck, "TYTN POS": ShoppingCart };
 
 // Platforms with a real live adapter get the full wizard; the rest keep the legacy toggle.
-const WIZARD_PLATFORMS = new Set(["Stocksix", "TradeMe", "Facebook Marketplace", "Gmail"]);
+const WIZARD_PLATFORMS = new Set(["Stocksix", "TradeMe", "Facebook Marketplace", "Gmail", "eBay", "govcr.online", "TYTN POS"]);
 
 const FIELD_LABELS = {
-  base_url: "Stocksix address (URL)",
+  base_url: "Base URL (address)",
   api_key: "API Key",
   consumer_key: "Consumer Key",
   consumer_secret: "Consumer Secret",
@@ -33,6 +36,11 @@ const FIELD_LABELS = {
   page_token: "Page Access Token",
   page_id: "Page ID (optional)",
   access_token: "Gmail Access Token",
+  client_id: "eBay App ID (Client ID)",
+  client_secret: "Client Secret",
+  refresh_token: "Refresh Token (optional)",
+  email: "govcr.online email",
+  password: "govcr.online password",
 };
 
 const GUIDE = {
@@ -70,6 +78,33 @@ const GUIDE = {
       "Create a Google Cloud project and turn on the Gmail API.",
       "Generate an access token with Gmail read-only access.",
       "Paste it below — Listrix only reads buyer messages; it never sends.",
+    ],
+  },
+  "eBay": {
+    link: "https://developer.ebay.com",
+    linkLabel: "developer.ebay.com — free developer account",
+    steps: [
+      "Create a free eBay developer account (developer.ebay.com) and register an app.",
+      "Copy the App ID (Client ID) and Client Secret.",
+      "Paste them below. Add a Refresh Token to unlock live listing anchors — until then sync runs on clearly-labelled simulated data.",
+    ],
+  },
+  "govcr.online": {
+    link: "https://govcr.online",
+    linkLabel: "govcr.online — your compliance portal",
+    steps: [
+      "Sign in to govcr.online to confirm your portal login works.",
+      "Paste the same email and password below — they are stored encrypted and never shown again.",
+      "Sync imports compliance records for your review; nothing is ever filed automatically.",
+    ],
+  },
+  "TYTN POS": {
+    link: "https://github.com/lucasmaxxinfo-sketch",
+    linkLabel: "TYTN POS (your point-of-sale app — open source)",
+    steps: [
+      "Start your POS app and open its settings to create an API key.",
+      "Paste the key below and set the address to where the POS is running (usually http://localhost:4000).",
+      "Sync imports sales so top sellers surface for restock — nothing is changed in the POS.",
     ],
   },
 };
@@ -192,7 +227,7 @@ export default function IntegrationHub() {
   return (
     <div data-testid="integration-hub-page">
       <div className="mb-5 rounded-xl border border-primary/20 bg-card/50 p-4 text-sm text-muted-foreground shadow-orangeGlow">
-        <span className="font-semibold text-foreground">Approval-gated connector layer.</span> No auto-posting or auto-messaging — every external action needs your approval and is logged. Use the <span className="text-foreground">wizard</span> to paste your own TradeMe / Facebook / Gmail credentials (encrypted, stored per business). Without credentials, connectors run on simulated data.
+        <span className="font-semibold text-foreground">Approval-gated connector layer.</span> No auto-posting or auto-messaging — every external action needs your approval and is logged. Use the <span className="text-foreground">wizard</span> to link TradeMe, Facebook Marketplace, eBay, Gmail, govcr.online, TYTN POS, Stocksix inventory and more (credentials are encrypted, stored per business). Without credentials, connectors run on clearly-labelled simulated data.
       </div>
 
       {loading ? <div className="flex h-64 items-center justify-center text-muted-foreground"><Loader2 className="animate-spin" size={26} /></div> : (

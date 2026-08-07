@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Loader2, LogIn, UserPlus } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
@@ -13,6 +13,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [accepted, setAccepted] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const submit = async (e) => {
@@ -20,7 +21,7 @@ export default function Login() {
     setBusy(true);
     try {
       if (mode === "login") await login(email, password);
-      else await register(email, password, name || undefined);
+      else await register(email, password, name || undefined, accepted);
       toast.success(mode === "login" ? "Signed in" : "Account created");
       navigate("/dashboard");
     } catch (err) {
@@ -57,7 +58,29 @@ export default function Login() {
               <label htmlFor="auth-password" className="mb-1 block text-xs font-medium text-muted-foreground">Password</label>
               <input id="auth-password" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary" placeholder="At least 8 characters" />
             </div>
-            <button type="submit" disabled={busy} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-orangeGlow transition-shadow hover:shadow-orangeGlowStrong disabled:opacity-60">
+            {mode === "register" && (
+              <label className="flex items-start gap-2 rounded-lg border border-border bg-background/60 p-3 text-xs leading-relaxed text-muted-foreground">
+                <input
+                  type="checkbox"
+                  checked={accepted}
+                  onChange={(e) => setAccepted(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-border bg-background accent-primary"
+                  aria-label="I agree to the Terms and Privacy Policy"
+                />
+                <span>
+                  I have read and agree to the{" "}
+                  <Link to="/terms" className="font-medium text-primary underline underline-offset-2 hover:text-primary/80">
+                    Terms &amp; Conditions
+                  </Link>{" "}
+                  and{" "}
+                  <Link to="/privacy" className="font-medium text-primary underline underline-offset-2 hover:text-primary/80">
+                    Privacy Policy
+                  </Link>
+                  .
+                </span>
+              </label>
+            )}
+            <button type="submit" disabled={busy || (mode === "register" && !accepted)} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-orangeGlow transition-shadow hover:shadow-orangeGlowStrong disabled:opacity-60">
               {busy ? <Loader2 size={15} className="animate-spin" /> : mode === "login" ? <LogIn size={15} /> : <UserPlus size={15} />}
               {mode === "login" ? "Sign in" : "Create account"}
             </button>

@@ -24,10 +24,11 @@ export function AuthProvider({ children }) {
     return data;
   }, []);
 
-  const register = useCallback(async (email, password, name) => {
-    const data = await apiRegister({ email, password, name });
+  const register = useCallback(async (email, password, name, acceptedTerms) => {
+    const data = await apiRegister({ email, password, name, accepted_terms: !!acceptedTerms });
     localStorage.setItem("listrix_token", data.access_token);
     setUser(data.user);
+    try { sessionStorage.setItem("listrix:just-registered", "1"); } catch {}
     return data;
   }, []);
 
