@@ -14,7 +14,7 @@ export const DeckSidebar = () => {
   return (
     <aside
       data-testid="app-sidebar"
-      className="hidden w-[240px] shrink-0 flex-col gap-3 overflow-y-auto py-3 lx-scroll lg:flex xl:w-[264px]"
+      className="flex w-[240px] shrink-0 flex-col gap-3 overflow-y-auto py-3 lx-scroll"
       aria-label="Contextual actions"
     >
       <p className="px-2 text-[10px] font-bold uppercase tracking-[0.24em] text-[hsl(var(--tp-text-secondary))]">

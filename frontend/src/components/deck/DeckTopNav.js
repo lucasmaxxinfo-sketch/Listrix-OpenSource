@@ -9,7 +9,7 @@ export const DeckTopNav = () => {
   return (
     <nav
       data-testid="deck-topnav"
-      className="flex h-[76px] shrink-0 items-stretch justify-center gap-2 border-b border-[hsl(var(--tp-border))] bg-[hsl(var(--tp-panel))]/60 px-3 md:gap-4"
+      className="flex h-[76px] shrink-0 items-stretch justify-center gap-4 border-b border-[hsl(var(--tp-border))] bg-[hsl(var(--tp-panel))]/60 px-3"
       aria-label="Primary modules"
     >
       {MODULES.map(({ id, label, icon: Icon, to }) => {

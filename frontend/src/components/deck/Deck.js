@@ -86,7 +86,7 @@ export const Deck = ({ compact = false }) => {
       onWheel={onWheel}
       className="lx-deck relative mx-auto select-none"
       style={{
-        width: "min(460px, 100%, 46vh)",
+        width: "372px", // fixed Deck diameter (Terilliom Deck SDK)
         aspectRatio: "1 / 1",
         minHeight: compact ? 240 : 300,
       }}

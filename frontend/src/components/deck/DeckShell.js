@@ -10,12 +10,12 @@ import AIStatusBanner from "@/components/AIStatusBanner";
 export const DeckShell = ({ children }) => (
   <div
     data-testid="deck-shell"
-    className="deck-app flex h-[100dvh] w-screen flex-col overflow-hidden bg-[hsl(var(--tp-background))] text-[hsl(var(--tp-text-primary))]"
+    className="deck-app relative flex h-[800px] w-[1280px] flex-col overflow-hidden bg-[hsl(var(--tp-background))] text-[hsl(var(--tp-text-primary))]"
   >
     <DeckHeader />
     <DeckTopNav />
 
-    <div className="deck-main flex min-h-0 flex-1 gap-3 px-3 md:gap-4 md:px-4">
+    <div className="deck-main flex min-h-0 flex-1 gap-4 px-4">
       <DeckSidebar />
 
       <section className="deck-center flex min-w-0 flex-1 flex-col overflow-hidden">

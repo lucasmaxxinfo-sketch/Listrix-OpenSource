@@ -17,7 +17,7 @@ export const DeckDock = () => {
   return (
     <footer
       data-testid="deck-dock"
-      className="relative z-20 flex h-[72px] shrink-0 items-center gap-1.5 border-t border-[hsl(var(--tp-border))] bg-[hsl(var(--tp-panel))]/90 px-3 backdrop-blur md:gap-3 md:px-5"
+      className="relative z-20 flex h-[72px] shrink-0 items-center gap-3 border-t border-[hsl(var(--tp-border))] bg-[hsl(var(--tp-panel))]/90 px-5 backdrop-blur"
     >
       <span className="absolute inset-x-0 top-0 h-[2px] lx-rainbow-line opacity-70" aria-hidden="true" />
 
@@ -49,7 +49,7 @@ export const DeckDock = () => {
 
       {/* status + clock */}
       <div className="ml-auto flex shrink-0 items-center gap-3 pl-2">
-        <div className="hidden items-center gap-2 rounded-full border border-[hsl(var(--tp-border))] bg-black/35 px-3 py-1.5 lg:flex">
+        <div className="flex items-center gap-2 rounded-full border border-[hsl(var(--tp-border))] bg-black/35 px-3 py-1.5">
           <span className={`h-2 w-2 rounded-full ${aiOk ? "bg-[#5ee08a] shadow-[0_0_8px_#5ee08a]" : "bg-[#ffb648] shadow-[0_0_8px_#ffb648] lx-pulse-2s"}`} />
           <span className="font-mono text-[10px] uppercase tracking-wider text-[hsl(var(--tp-text-secondary))]">{aiOk ? "AI online" : "AI offline"}</span>
         </div>

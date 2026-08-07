@@ -5,6 +5,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { WorkspaceProvider, useWorkspace } from "@/context/WorkspaceContext";
 import AppShell from "@/components/layout/AppShell";
 import LandscapeGate from "@/components/deck/LandscapeGate";
+import DeckScaler from "@/components/deck/DeckScaler";
 import AIAssistant from "@/components/AIAssistant";
 import Dashboard from "@/pages/Dashboard";
 import Items from "@/pages/Items";
@@ -56,7 +57,9 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <WorkspaceProvider>
-            <Shell />
+            <DeckScaler>
+              <Shell />
+            </DeckScaler>
           </WorkspaceProvider>
         </AuthProvider>
         <Toaster position="top-right" theme="dark" richColors />

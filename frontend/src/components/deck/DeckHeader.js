@@ -37,7 +37,7 @@ export const DeckHeader = () => {
   return (
     <header
       data-testid="deck-header"
-      className="relative z-30 flex h-16 shrink-0 items-center justify-between gap-3 border-b border-[hsl(var(--tp-border))] bg-[hsl(var(--tp-panel))]/90 px-4 backdrop-blur md:px-5"
+      className="relative z-30 flex h-16 shrink-0 items-center justify-between gap-3 border-b border-[hsl(var(--tp-border))] bg-[hsl(var(--tp-panel))]/90 px-5 backdrop-blur"
     >
       {/* rainbow rail */}
       <span className="absolute inset-x-0 top-0 h-[2px] lx-rainbow-line" aria-hidden="true" />
@@ -54,7 +54,7 @@ export const DeckHeader = () => {
       </div>
 
       {/* center: search */}
-      <form onSubmit={submitSearch} className="hidden min-w-0 flex-1 max-w-md md:block" data-testid="global-search">
+      <form onSubmit={submitSearch} className="min-w-0 flex-1 max-w-md" data-testid="global-search">
         <div className="relative">
           <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[hsl(var(--tp-text-secondary))]" />
           <input
@@ -75,7 +75,7 @@ export const DeckHeader = () => {
           aria-label="AI Assistant"
         >
           <Sparkles size={17} className="text-[#9a7bff]" />
-          <span className="hidden lg:inline">AI Assistant</span>
+          <span className="inline">AI Assistant</span>
         </button>
 
         <div className="relative" data-testid="notifications-bell">
@@ -124,7 +124,7 @@ export const DeckHeader = () => {
         <button
           data-testid="header-new-item"
           onClick={() => navigate("/workflows")}
-          className="deck-ico lx-deck-touch hidden h-11 items-center gap-2 rounded-xl bg-[#ffb648] px-4 text-sm font-bold text-black transition-all duration-150 hover:brightness-110 sm:inline-flex"
+          className="deck-ico lx-deck-touch inline-flex h-11 items-center gap-2 rounded-xl bg-[#ffb648] px-4 text-sm font-bold text-black transition-all duration-150 hover:brightness-110"
         >
           <Plus size={17} /> New Item
         </button>
@@ -139,8 +139,8 @@ export const DeckHeader = () => {
                 aria-label="User menu"
               >
                 <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#5ee08a]/20 text-xs font-black text-[#5ee08a]">{initials}</span>
-                <span className="hidden max-w-[140px] truncate text-xs text-[hsl(var(--tp-text-secondary))] xl:block">{user.name || user.email}</span>
-                <ChevronDown size={14} className="hidden text-[hsl(var(--tp-text-secondary))] xl:block" />
+                <span className="block max-w-[140px] truncate text-xs text-[hsl(var(--tp-text-secondary))]">{user.name || user.email}</span>
+                <ChevronDown size={14} className="text-[hsl(var(--tp-text-secondary))]" />
               </button>
               {userOpen && (
                 <>
@@ -162,14 +162,14 @@ export const DeckHeader = () => {
             </>
           ) : (
             <button data-testid="header-signin" onClick={() => navigate("/login")} className="deck-ico lx-deck-touch flex h-11 items-center gap-2 rounded-xl border border-[hsl(var(--tp-border))] bg-black/35 px-3 text-sm font-semibold text-[hsl(var(--tp-text-primary))] transition-all duration-150 hover:border-[#3ec8f2]/70 hover:shadow-[0_0_18px_rgba(62,200,242,0.25)]">
-              <LogIn size={16} /> <span className="hidden sm:inline">Sign in</span>
+              <LogIn size={16} /> <span className="inline">Sign in</span>
             </button>
           )}
         </div>
 
         <button
           onClick={() => navigate("/settings")}
-          className="deck-ico lx-deck-touch hidden h-11 w-11 items-center justify-center rounded-xl border border-[hsl(var(--tp-border))] bg-black/35 text-[hsl(var(--tp-text-primary))] transition-all duration-150 hover:border-[#ff6ec7]/70 hover:shadow-[0_0_18px_rgba(255,110,199,0.25)] md:flex"
+          className="deck-ico lx-deck-touch flex h-11 w-11 items-center justify-center rounded-xl border border-[hsl(var(--tp-border))] bg-black/35 text-[hsl(var(--tp-text-primary))] transition-all duration-150 hover:border-[#ff6ec7]/70 hover:shadow-[0_0_18px_rgba(255,110,199,0.25)]"
           aria-label="Settings"
         >
           <Settings size={18} />

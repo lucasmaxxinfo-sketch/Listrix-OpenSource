@@ -1,25 +1,54 @@
-import React from "react";
-import { RotateCcw } from "lucide-react";
+import React, { useState } from "react";
+import { RotateCcw, X } from "lucide-react";
+
+const DISMISS_KEY = "listrix:landscape-hint-dismissed";
 
 /**
- * Forced-landscape gate.
- * The Terilliom Deck layout is fixed landscape; portrait screens get
- * a rotate prompt instead of a broken vertical layout.
+ * Landscape hint — Listrix is a forced-landscape tablet app. The DeckScaler
+ * fits the full tablet UI onto any screen, so portrait phones get a small
+ * dismissible hint instead of a blocking rotate screen.
  */
-export const LandscapeGate = () => (
-  <div
-    data-testid="landscape-gate"
-    className="lx-landscape-gate fixed inset-0 z-[999] hidden flex-col items-center justify-center gap-5 bg-[#07050c] px-8 text-center text-white"
-  >
-    <span className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-[#ffb648] text-[#ffb648] shadow-[0_0_40px_rgba(255,182,72,0.45)] lx-rotate-hint">
-      <RotateCcw size={36} />
-    </span>
-    <div>
-      <p className="text-xl font-black uppercase tracking-widest">Rotate your device</p>
-      <p className="mt-1 text-sm text-white/60">Listrix runs in landscape — turn your screen sideways to continue.</p>
+export const LandscapeGate = () => {
+  const [dismissed, setDismissed] = useState(() => {
+    try {
+      return sessionStorage.getItem(DISMISS_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+
+  if (dismissed) return null;
+
+  const dismiss = () => {
+    setDismissed(true);
+    try {
+      sessionStorage.setItem(DISMISS_KEY, "1");
+    } catch {}
+  };
+
+  return (
+    <div
+      data-testid="landscape-gate"
+      className="lx-rotate-pill"
+      role="note"
+    >
+      <RotateCcw size={15} className="lx-rotate-hint shrink-0 text-[#ffb648]" />
+      <span className="min-w-0">
+        <span className="block text-[11px] font-black uppercase tracking-[0.18em] text-white">Tablet preview</span>
+        <span className="block text-[11px] leading-snug text-white/60">
+          Listrix is a landscape app — this view is scaled to fit your screen. Rotate your device for full size.
+        </span>
+      </span>
+      <button
+        type="button"
+        onClick={dismiss}
+        aria-label="Dismiss hint"
+        className="deck-ico flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[hsl(var(--tp-border))] text-white/70 transition-colors duration-150 hover:text-white"
+      >
+        <X size={15} />
+      </button>
     </div>
-    <p className="max-w-xs text-[11px] leading-relaxed text-white/35">Terilliom Deck SDK · The interface is fixed. Only the business function changes.</p>
-  </div>
-);
+  );
+};
 
 export default LandscapeGate;

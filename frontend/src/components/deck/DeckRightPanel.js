@@ -30,7 +30,7 @@ export const DeckRightPanel = () => {
   return (
     <aside
       data-testid="deck-right-panel"
-      className="hidden w-[250px] shrink-0 flex-col gap-3 overflow-y-auto py-3 lx-scroll md:flex xl:w-[300px]"
+      className="flex w-[250px] shrink-0 flex-col gap-3 overflow-y-auto py-3 lx-scroll"
       aria-label="Live information"
     >
       <div className="flex items-center justify-between px-1">
