@@ -45,55 +45,87 @@ function angleAt(cx, cy, x, y) {
  * DeckLcd — the LCD panel above the wheel. Fixed by the Deck SDK: it always
  * shows the option under the knob marker, and updates live as the wheel turns.
  */
-export const DeckLcd = ({ selected, compact = false }) => {
+export const DeckLcd = ({ selected, compact = false, dir = 0 }) => {
   const seg = DECK_SEGMENTS[selected];
   const Icon = seg.icon;
   return (
     <div
       data-testid="deck-lcd"
       aria-live="polite"
-      className={`lx-lcd relative w-full max-w-[340px] overflow-hidden rounded-xl border ${
-        compact ? "px-3 py-1.5" : "px-4 py-2"
-      }`}
+      className="lx-lcd-frame w-full max-w-[360px] rounded-[15px] p-[3px]"
     >
-      <div className="relative z-10 font-mono">
-        <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-[0.3em] text-[#7dffa9]/75">
-          <span>Listrix · Deck</span>
-          <span>{String(selected + 1).padStart(2, "0")} / {String(SEGMENTS).padStart(2, "0")}</span>
-        </div>
-        <div className="mt-1 flex items-center gap-2">
-          <span
-            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border bg-black/40"
-            style={{ color: seg.color, borderColor: `${seg.color}55`, boxShadow: `0 0 12px ${seg.color}33` }}
-          >
-            <Icon size={compact ? 13 : 15} />
-          </span>
-          <span
-            className={`truncate font-black uppercase tracking-[0.14em] ${compact ? "text-[13px]" : "text-[15px]"}`}
-            style={{ color: seg.color, textShadow: `0 0 12px ${seg.color}88` }}
-          >
-            {seg.label}
-          </span>
-          <span className="ml-auto hidden shrink-0 text-[9px] uppercase tracking-[0.2em] text-[#7dffa9]/55 sm:block">
-            Press knob ↓
-          </span>
-        </div>
-        <div className="mt-1.5 flex items-center gap-[3px]" aria-hidden="true">
-          {DECK_SEGMENTS.map((s, i) => (
+      <div
+        className={`lx-lcd relative w-full overflow-hidden rounded-[12px] border ${
+          compact ? "px-3 py-1.5" : "px-4 py-2"
+        }`}
+      >
+        <div className="relative z-10 font-mono">
+          <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-[0.32em] text-[#7dffa9]/70">
+            <span>Terilliom · Deck</span>
+            <span>{String(selected + 1).padStart(2, "0")} / {String(SEGMENTS).padStart(2, "0")}</span>
+          </div>
+          <div className="mt-1 flex items-center gap-2.5">
             <span
-              key={s.id}
-              className="h-1 flex-1 rounded-[2px] transition-all duration-150"
+              key={`${selected}-ic`}
+              className="lx-lcd-in flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border bg-black/40"
               style={{
-                background: i === selected ? s.color : "rgba(255,255,255,0.12)",
-                boxShadow: i === selected ? `0 0 8px ${s.color}` : "none",
-                height: i === selected ? 6 : 4,
+                color: seg.color,
+                borderColor: `${seg.color}66`,
+                boxShadow: `0 0 14px ${seg.color}40, inset 0 0 6px rgba(0,0,0,0.6)`,
               }}
-            />
-          ))}
+            >
+              <Icon size={compact ? 14 : 16} />
+            </span>
+            <span
+              key={`${selected}-lb`}
+              className="lx-lcd-in truncate font-black uppercase tracking-[0.16em]"
+              style={{
+                color: seg.color,
+                textShadow: `0 0 14px ${seg.color}99, 0 0 34px ${seg.color}44`,
+              }}
+            >
+              {seg.label}
+            </span>
+            <span className="ml-auto hidden shrink-0 items-center gap-1 text-[9px] font-bold uppercase tracking-[0.22em] text-[#7dffa9]/45 sm:flex">
+              <span className="text-[#7dffa9]/70">‹</span>Turn · Press<span className="text-[#7dffa9]/70">›</span>
+            </span>
+          </div>
+          <div className="mt-1.5 flex items-center gap-[3px]" aria-hidden="true">
+            {DECK_SEGMENTS.map((s, i) => (
+              <span
+                key={s.id}
+                className="h-1 flex-1 rounded-[2px] transition-all duration-150"
+                style={{
+                  background: i === selected ? s.color : "rgba(255,255,255,0.10)",
+                  boxShadow: i === selected ? `0 0 8px ${s.color}` : "none",
+                  height: i === selected ? 7 : 4,
+                }}
+              />
+            ))}
+          </div>
         </div>
+        {/* last-turn direction indicators */}
+        <span
+          aria-hidden="true"
+          className={`pointer-events-none absolute left-1.5 top-1/2 z-10 text-base leading-none text-[#7dffa9] ${
+            dir === -1 ? "lx-chev-on-l" : "opacity-20"
+          }`}
+          style={{ transform: "translateY(-50%)" }}
+        >
+          ‹
+        </span>
+        <span
+          aria-hidden="true"
+          className={`pointer-events-none absolute right-1.5 top-1/2 z-10 text-base leading-none text-[#7dffa9] ${
+            dir === 1 ? "lx-chev-on" : "opacity-20"
+          }`}
+          style={{ transform: "translateY(-50%)" }}
+        >
+          ›
+        </span>
+        <div className="lx-lcd-scan pointer-events-none absolute inset-0 z-0" />
+        <div className="lx-lcd-glass pointer-events-none absolute inset-0 z-20" />
       </div>
-      <div className="lx-lcd-scan pointer-events-none absolute inset-0 z-0" />
-      <div className="lx-lcd-glass pointer-events-none absolute inset-0 z-20" />
     </div>
   );
 };
@@ -111,9 +143,19 @@ export const DeckControl = ({ compact = false, size }) => {
   const [selected, setSelected] = useState(() => segmentIndexForPath(location.pathname));
   const [spinDeg, setSpinDeg] = useState(() => segmentIndexForPath(location.pathname) * STEP);
   const [snapping, setSnapping] = useState(false);
+  const [lastDir, setLastDir] = useState(0);
   const selectedRef = useRef(selected);
   const dragRef = useRef(null);
   const dragJustEndedRef = useRef(false);
+
+  // Small tactile nudge on each detent so turning feels like a real control.
+  const detent = useCallback(() => {
+    try {
+      navigator.vibrate?.(12);
+    } catch {
+      /* noop */
+    }
+  }, []);
 
   const applySelection = useCallback((idx, animate) => {
     const n = ((idx % SEGMENTS) + SEGMENTS) % SEGMENTS;
@@ -131,8 +173,10 @@ export const DeckControl = ({ compact = false, size }) => {
   const step = useCallback(
     (dir) => {
       applySelection(selectedRef.current + dir, true);
+      setLastDir(dir);
+      detent();
     },
-    [applySelection]
+    [applySelection, detent]
   );
 
   const onPointerDown = useCallback((e) => {
@@ -149,6 +193,7 @@ export const DeckControl = ({ compact = false, size }) => {
       lastAngle: angleAt(cx, cy, e.clientX, e.clientY),
       acc: 0,
       moved: false,
+      idx: selectedRef.current,
     };
     setSnapping(false);
     try {
@@ -170,6 +215,11 @@ export const DeckControl = ({ compact = false, size }) => {
     d.moved = true;
     const total = selectedRef.current * STEP + d.acc;
     const idx = ((Math.round(total / STEP) % SEGMENTS) + SEGMENTS) % SEGMENTS;
+    if (idx !== d.idx) {
+      d.idx = idx;
+      setLastDir(delta > 0 ? 1 : -1);
+      detent();
+    }
     selectedRef.current = idx;
     setSelected(idx);
     setSpinDeg(total);
@@ -230,7 +280,7 @@ export const DeckControl = ({ compact = false, size }) => {
 
   return (
     <div className="flex w-full flex-col items-center gap-2">
-      <DeckLcd selected={selected} compact={compact} />
+      <DeckLcd selected={selected} compact={compact} dir={lastDir} />
 
       <div
         data-testid="central-deck"
@@ -251,8 +301,15 @@ export const DeckControl = ({ compact = false, size }) => {
         }}
       >
         {/* stage glow */}
-        <div className="absolute left-1/2 top-1/2 h-[92%] w-[92%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(30,26,18,0.55),rgba(0,0,0,0.9)_62%)] shadow-[0_0_90px_rgba(255,180,90,0.14),inset_0_0_70px_rgba(0,0,0,0.85)]" />
+        <div
+          className="absolute left-1/2 top-1/2 h-[92%] w-[92%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(30,26,18,0.55),rgba(0,0,0,0.9)_62%)]"
+          style={{
+            boxShadow: `0 0 90px ${seg.color}26, inset 0 0 70px rgba(0,0,0,0.85)`,
+          }}
+        />
         <div className="absolute left-1/2 top-1/2 h-[86%] w-[86%] -translate-x-1/2 -translate-y-1/2 rounded-full lx-rainbow-halo" />
+        {/* stage top-light */}
+        <div className="pointer-events-none absolute inset-0 z-[6] rounded-full bg-[radial-gradient(58%_34%_at_50%_5%,rgba(255,255,255,0.09),transparent_72%)]" />
 
         {/* fixed top marker — the option under this marker is the selected mode */}
         <div
@@ -292,6 +349,11 @@ export const DeckControl = ({ compact = false, size }) => {
               <radialGradient id="knobDot" cx="0.35" cy="0.3" r="1">
                 <stop offset="0" stopColor="#fff4e0" />
                 <stop offset="1" stopColor="#e08a3c" />
+              </radialGradient>
+              <radialGradient id="knobRim" cx="0.5" cy="0.3" r="0.9">
+                <stop offset="0" stopColor="#4a4254" />
+                <stop offset="0.6" stopColor="#221e2b" />
+                <stop offset="1" stopColor="#0b0910" />
               </radialGradient>
             </defs>
 
@@ -348,13 +410,15 @@ export const DeckControl = ({ compact = false, size }) => {
 
             {/* ---- control knob (the wheel's heart) ---- */}
             <g className="pointer-events-none">
-              {/* bezel shadow ring */}
-              <circle cx={C} cy={C} r={72} fill="none" stroke="rgba(0,0,0,0.85)" strokeWidth="6" />
-              {/* ridge ring — reads as a physical knob */}
-              {Array.from({ length: 32 }).map((_, i) => {
-                const a = (i * 360) / 32;
-                const p0 = polar(C, C, 62, a);
-                const p1 = polar(C, C, 70, a);
+              {/* drop shadow under knob */}
+              <circle cx={C} cy={C} r={76} fill="#000" opacity="0.5" style={{ filter: "blur(7px)" }} />
+              {/* outer rim */}
+              <circle cx={C} cy={C} r={72} fill="url(#knobRim)" stroke="rgba(255,255,255,0.10)" strokeWidth="1" />
+              {/* knurled edge — dense machined ticks */}
+              {Array.from({ length: 56 }).map((_, i) => {
+                const a = (i * 360) / 56;
+                const p0 = polar(C, C, 64, a);
+                const p1 = polar(C, C, 72, a);
                 return (
                   <line
                     key={i}
@@ -362,27 +426,63 @@ export const DeckControl = ({ compact = false, size }) => {
                     y1={p0.y}
                     x2={p1.x}
                     y2={p1.y}
-                    stroke="rgba(255,255,255,0.28)"
-                    strokeWidth="2.2"
+                    stroke={i % 2 ? "rgba(255,255,255,0.20)" : "rgba(0,0,0,0.65)"}
+                    strokeWidth="1.8"
                     strokeLinecap="round"
                   />
                 );
               })}
-              {/* knob face */}
-              <circle cx={C} cy={C} r={58} fill="url(#knobFace)" stroke={seg.color} strokeWidth="2.5" strokeOpacity="0.85" />
-              <circle cx={C} cy={C} r={58} fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth="1" />
-              {/* pointer notch — rotates with the wheel */}
+              {/* bevel highlight — top light catch */}
               <path
-                d={`M ${C - 7} ${C - 56} L ${C + 7} ${C - 56} L ${C} ${C - 42} Z`}
-                fill={seg.color}
-                style={{ filter: `drop-shadow(0 0 6px ${seg.color})` }}
+                d={`M ${C - 55} ${C - 22} A 55 55 0 0 1 ${C + 55} ${C - 22}`}
+                fill="none"
+                stroke="rgba(255,255,255,0.16)"
+                strokeWidth="2.6"
+                strokeLinecap="round"
               />
-              {/* grip cross-lines */}
-              <circle cx={C} cy={C} r={44} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1.4" />
-              <circle cx={C} cy={C} r={32} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-              {/* centre dot (brand light) */}
-              <circle cx={C} cy={C} r={12} fill="#0a0910" stroke="url(#deckRimRainbow)" strokeWidth="1.6" />
-              <circle cx={C} cy={C} r={4.5} fill="url(#knobDot)" style={{ filter: "drop-shadow(0 0 5px rgba(255,210,140,0.9))" }} />
+              {/* knob face */}
+              <circle
+                cx={C}
+                cy={C}
+                r={60}
+                fill="url(#knobFace)"
+                stroke={seg.color}
+                strokeWidth="3"
+                strokeOpacity="0.95"
+                style={{ filter: `drop-shadow(0 0 12px ${seg.color}55)` }}
+              />
+              {/* index ring */}
+              <circle cx={C} cy={C} r={48} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="1.2" />
+              {/* pointer groove — rotates with the wheel */}
+              <line x1={C} y1={C + 10} x2={C} y2={C - 46} stroke="rgba(0,0,0,0.8)" strokeWidth="3.4" strokeLinecap="round" />
+              <line x1={C + 1.4} y1={C + 11} x2={C + 1.4} y2={C - 45} stroke="rgba(255,255,255,0.10)" strokeWidth="1" strokeLinecap="round" />
+              {/* coloured pointer notch */}
+              <path
+                d={`M ${C - 8} ${C - 57} L ${C + 8} ${C - 57} L ${C} ${C - 40} Z`}
+                fill={seg.color}
+                style={{ filter: `drop-shadow(0 0 8px ${seg.color})` }}
+              />
+              {/* centre cap */}
+              <circle cx={C} cy={C} r={17} fill="#0b0910" stroke="rgba(255,255,255,0.10)" strokeWidth="1" />
+              {Array.from({ length: 12 }).map((_, i) => {
+                const a = i * 30;
+                const p0 = polar(C, C, 19, a);
+                const p1 = polar(C, C, 23, a);
+                return (
+                  <line
+                    key={i}
+                    x1={p0.x}
+                    y1={p0.y}
+                    x2={p1.x}
+                    y2={p1.y}
+                    stroke="rgba(255,255,255,0.14)"
+                    strokeWidth="1"
+                  />
+                );
+              })}
+              {/* brand light — breathing glow */}
+              <circle cx={C} cy={C} r={11} fill="#0a0910" stroke="url(#deckRimRainbow)" strokeWidth="1.6" className="lx-knob-glow" />
+              <circle cx={C} cy={C} r={4} fill="url(#knobDot)" style={{ filter: "drop-shadow(0 0 6px rgba(255,210,140,0.95))" }} />
             </g>
           </svg>
 
@@ -417,7 +517,7 @@ export const DeckControl = ({ compact = false, size }) => {
           <button
             data-testid="deck-knob"
             onClick={pressKnob}
-            className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full lx-deck-touch"
+            className="lx-knob-btn absolute left-1/2 top-1/2 z-10 cursor-pointer rounded-full lx-deck-touch"
             style={{ width: "34%", height: "34%", background: "transparent", border: "none" }}
             aria-label={`Open ${seg.label}`}
             title={`Open ${seg.label}`}
