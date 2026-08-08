@@ -223,7 +223,7 @@ export const DeckControl = ({ compact = false, size }) => {
     selectedRef.current = idx;
     setSelected(idx);
     setSpinDeg(total);
-  }, []);
+  }, [detent]);
 
   const onPointerUp = useCallback(() => {
     const d = dragRef.current;
