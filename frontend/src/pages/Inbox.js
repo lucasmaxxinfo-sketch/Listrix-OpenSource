@@ -17,6 +17,16 @@ const PRIO = {
   low: "border-border text-muted-foreground",
 };
 
+// Clearly-labelled demo messages so the free GitHub Pages shell never shows a
+// hard "failed to load" wall — connect the local backend for live data.
+const DEMO_INBOX = [
+  { id: "demo-1", type: "SYSTEM", priority: "low", title: "Welcome to your operations inbox", body: "Alerts, opportunities and buyer signals will appear here. You are seeing demo data — run the Listrix launcher on your computer to connect the live backend.", simulated: true },
+  { id: "demo-2", type: "OPPORTUNITY", priority: "medium", title: "Strong performer detected", body: "A demo listing is outperforming its shelf — consider featuring or bundling it to keep momentum.", suggested_action: "Feature or bundle this item.", simulated: true },
+  { id: "demo-3", type: "AI_ALERT", priority: "high", title: "Item needs attention", body: "A demo item is at risk of not selling. Review pricing and photos to lift its likelihood of sale.", suggested_action: "Review pricing and listing.", simulated: true },
+];
+
+const isBackendUnreachable = (err) => !err || !err.response;
+
 export default function Inbox() {
   const navigate = useNavigate();
   const [msgs, setMsgs] = useState([]);
@@ -24,16 +34,40 @@ export default function Inbox() {
   const [refreshing, setRefreshing] = useState(false);
   const [replyOpen, setReplyOpen] = useState(null);
   const [replyText, setReplyText] = useState("");
+  const [demo, setDemo] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
-    try { const { data } = await api.get("/inbox"); setMsgs(data); } catch { toast.error("Failed to load inbox"); } finally { setLoading(false); }
+    try {
+      const { data } = await api.get("/inbox");
+      setDemo(false);
+      setMsgs(Array.isArray(data) ? data : []);
+    } catch (err) {
+      if (isBackendUnreachable(err)) {
+        setDemo(true);
+        setMsgs(DEMO_INBOX);
+      } else {
+        toast.error("Failed to load inbox");
+      }
+    } finally { setLoading(false); }
   }, []);
   useEffect(() => { load(); }, [load]);
 
   const refresh = async () => {
     setRefreshing(true);
-    try { const r = await api.post("/inbox/refresh"); await load(); toast.success(r.data.gmail_imported ? `Inbox refreshed (+${r.data.gmail_imported} Gmail)` : "Inbox refreshed"); } catch { toast.error("Refresh failed"); } finally { setRefreshing(false); }
+    try {
+      const r = await api.post("/inbox/refresh");
+      await load();
+      toast.success(r.data.gmail_imported ? `Inbox refreshed (+${r.data.gmail_imported} Gmail)` : "Inbox refreshed");
+    } catch (err) {
+      if (isBackendUnreachable(err)) {
+        toast.info("Demo mode — start the Listrix launcher on your computer to refresh a live inbox");
+        setDemo(true);
+        setMsgs(DEMO_INBOX);
+      } else {
+        toast.error("Refresh failed");
+      }
+    } finally { setRefreshing(false); }
   };
   const sendReply = async (m) => {
     if (!replyText.trim()) return toast.error("Write a reply first");
@@ -47,6 +81,12 @@ export default function Inbox() {
         <p className="text-sm text-muted-foreground">Business operations inbox — alerts, opportunities & buyer signals.</p>
         <button data-testid="inbox-refresh-button" onClick={refresh} disabled={refreshing} className="inline-flex items-center gap-2 rounded-lg bg-primary px-3.5 py-2 text-sm font-semibold text-primary-foreground shadow-orangeGlow hover:shadow-orangeGlowStrong disabled:opacity-60">{refreshing ? <Loader2 size={15} className="animate-spin" /> : <RefreshCw size={15} />} Refresh</button>
       </div>
+      {demo && (
+        <div data-testid="inbox-demo-banner" className="mb-4 flex items-center gap-2 rounded-xl border border-amber-500/30 bg-[rgba(255,182,72,0.08)] px-3.5 py-2.5 text-xs text-amber-200">
+          <AlertTriangle size={14} className="shrink-0" />
+          <span><span className="font-semibold">Demo inbox.</span> The backend isn't connected on this page — start the Listrix launcher on your computer for your live inbox and Gmail sync.</span>
+        </div>
+      )}
       {loading ? <div className="flex h-64 items-center justify-center text-muted-foreground"><Loader2 className="animate-spin" size={26} /></div>
       : msgs.length === 0 ? (
         <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card/30 text-muted-foreground"><InboxIcon size={28} className="mb-3" /><p className="text-sm">Inbox is empty. Click Refresh to populate it.</p></div>

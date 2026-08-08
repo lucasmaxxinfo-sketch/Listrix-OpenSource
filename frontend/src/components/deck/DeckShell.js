@@ -2,7 +2,7 @@ import React from "react";
 import DeckHeader from "./DeckHeader";
 import DeckTopNav from "./DeckTopNav";
 import DeckSidebar from "./DeckSidebar";
-import Deck from "./Deck";
+import { DeckControl } from "./Deck";
 import DeckRightPanel from "./DeckRightPanel";
 import DeckDock from "./DeckDock";
 import DeckPortrait from "./DeckPortrait";
@@ -35,7 +35,7 @@ export const DeckShell = ({ children }) => {
 
         <section className="deck-center flex min-w-0 flex-1 flex-col overflow-hidden">
           <div className="flex shrink-0 items-center justify-center pt-2">
-            <Deck compact />
+            <DeckControl compact />
           </div>
           <AIStatusBanner />
           <main className="deck-content min-h-0 flex-1 overflow-y-auto lx-scroll pb-3">{children}</main>

@@ -8,7 +8,7 @@ import {
   Calculator, Percent, Target, Coins,
   ImagePlus, Wand2, Eraser, Stamp,
   Cable, CalendarClock, LayoutTemplate, Radio,
-  Inbox, BrainCircuit, Store, Plug, Settings,
+  Inbox, BrainCircuit, Store, Plug, Settings, LayoutDashboard,
 } from "lucide-react";
 
 export const RAINBOW = [
@@ -76,13 +76,13 @@ export function getActiveModule(pathname) {
 }
 
 export const DECK_SEGMENTS = [
-  { id: "listings", label: "Listings", to: "/items", color: RAINBOW[0] },
-  { id: "pricing", label: "Pricing", to: "/financials", color: RAINBOW[1] },
-  { id: "photos", label: "Photos", to: "/workflows", color: RAINBOW[2] },
-  { id: "publishing", label: "Publishing", to: "/market", color: RAINBOW[3] },
-  { id: "ai", label: "AI Studio", to: "/ai-manager", color: RAINBOW[4] },
-  { id: "inbox", label: "Inbox", to: "/inbox", color: RAINBOW[5] },
-  { id: "apps", label: "Apps", to: "/integrations", color: RAINBOW[6] },
-  { id: "command", label: "Command", to: COMMAND_TO, color: RAINBOW[7] },
+  { id: "listings", label: "Listings", to: "/items", color: RAINBOW[0], icon: Layers },
+  { id: "pricing", label: "Pricing", to: "/financials", color: RAINBOW[1], icon: Wallet },
+  { id: "photos", label: "Photos", to: "/workflows", color: RAINBOW[2], icon: Camera },
+  { id: "publishing", label: "Publishing", to: "/market", color: RAINBOW[3], icon: Rocket },
+  { id: "ai", label: "AI Studio", to: "/ai-manager", color: RAINBOW[4], icon: BrainCircuit },
+  { id: "inbox", label: "Inbox", to: "/inbox", color: RAINBOW[5], icon: Inbox },
+  { id: "apps", label: "Apps", to: "/integrations", color: RAINBOW[6], icon: Plug },
+  { id: "command", label: "Command", to: COMMAND_TO, color: RAINBOW[7], icon: LayoutDashboard },
 ];
 

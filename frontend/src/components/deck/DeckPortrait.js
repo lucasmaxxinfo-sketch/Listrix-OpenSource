@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Package, Sparkles, Gauge } from "lucide-react";
 import DeckHeader from "./DeckHeader";
 import DeckTopNav from "./DeckTopNav";
-import Deck from "./Deck";
+import { DeckControl } from "./Deck";
 import DeckDock from "./DeckDock";
 import AIStatusBanner from "@/components/AIStatusBanner";
 import { SIDEBAR_ACTIONS, getActiveModule } from "./modules";
@@ -70,8 +70,8 @@ export const DeckPortrait = ({ children }) => {
             ))}
           </div>
 
-          <div className="flex min-w-0 flex-1 justify-center">
-            <Deck compact size={WHEEL} />
+          <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1.5">
+            <DeckControl compact size={WHEEL} />
           </div>
 
           <div className="flex w-14 shrink-0 flex-col gap-2" aria-label="Live information">
